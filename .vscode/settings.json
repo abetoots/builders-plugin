@@ -1,0 +1,9 @@
+{
+    "liveSassCompile.settings.includeItems": [
+        "../public/css/**.scss"
+    ],
+    "liveSassCompile.settings.formats": [{
+        "format": "compressed",
+        "extensionName": ".min.css"
+    }]
+}
