@@ -1,0 +1,179 @@
+/**
+ * Sets a media query for the specified breakpoint
+ *
+ * Accepts:
+ * - $media-query: {String} Breakpoint variable (list found in variables.scss)
+ *
+ * Usage:
+ * .selector {
+ *   @include media-query($medium-up) {
+ *     color: red;
+ *   }
+ * }
+ */
+@mixin media-query($media-query) {
+    $breakpoint-found: false;
+
+    @each $breakpoint in $breakpoints {
+        $name: nth($breakpoint, 1);
+        $declaration: nth($breakpoint, 2);
+
+        @if $media-query==$name and $declaration {
+            $breakpoint-found: true;
+
+            @media only screen and #{$declaration} {
+                @content;
+            }
+        }
+    }
+}
+
+/**
+   * Outputs list of transition properties
+   *
+   * Accepts:
+   * - $transitions: {String} List of transition properties to set
+   *
+   * Usage:
+   * .selector {
+   *   @include transition(width, height 0.5s ease-in);
+   * }
+   */
+@mixin transition($transitions...) {
+    $output: ();
+
+    @each $transition in $transitions {
+        $output: append($output, get-transition-properties($transition), comma);
+    }
+
+    transition: $output;
+}
+
+/**
+   * Forces an element to self-clear its children
+   *
+   * Usage:
+   * .selector {
+   *   @include clearfix;
+   * }
+   */
+@mixin clearfix() {
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+
+    // stylelint-disable-next-line
+    *zoom: 1;
+}
+
+/**
+   * Hide element but make it accessible to screen readers
+   *
+   * Usage:
+   * .selector {
+   *   @include visually-hidden;
+   * }
+   */
+@mixin visually-hidden() {
+    // stylelint-disable-next-line
+    position: absolute !important;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+}
+
+/**
+   * Reverse the properties applied by @mixin visually-hidden
+   *
+   * Accepts:
+   * - $position: {String} Positioning method for element
+   *
+   * Usage:
+   * .selector {
+   *   @include visually-shown(relative);
+   * }
+   */
+@mixin visually-shown($position: inherit) {
+    // stylelint-disable-next-line
+    position: $position !important;
+    overflow: auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip: auto;
+}
+
+// How to use:
+// $min_width: 320px;
+// $max_width: 1200px;
+// $min_font: 16px;
+// $max_font: 24px;
+// html {
+//     @include fluid-type($min_width, $max_width, $min_font, $max_font, 'font-size');
+// }
+
+@function strip-unit($value) {
+    @return $value / ($value * 0 + 1);
+}
+
+@mixin fluid-type($min-vw, $max-vw, $min-px, $max-px, $type) {
+    $u1: unit($min-vw);
+    $u2: unit($max-vw);
+    $u3: unit($min-px);
+    $u4: unit($max-px);
+
+    @if $u1==$u2 and $u1==$u3 and $u1==$u4 {
+        & {
+            #{$type}: $min-px;
+
+            @media screen and (min-width: $min-vw) {
+                #{$type}: calc(#{$min-px} + #{strip-unit($max-px - $min-px)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+            }
+
+            @media screen and (min-width: $max-vw) {
+                #{$type}: $max-px;
+            }
+        }
+    }
+}
+
+//Variables for media query mixins
+$desktop: 1024px;
+$tablet: 768px;
+$mobile: 320px;
+
+@mixin tablet-above {
+    @media (min-width: #{$tablet}) {
+        @content;
+    }
+}
+
+@mixin tablet-below {
+    @media (max-width: #{$tablet - 1}) {
+        @content;
+    }
+}
+
+@mixin desktop-above {
+    @media (min-width: #{$desktop}) {
+        @content;
+    }
+}
+
+@mixin desktop-below {
+    @media (max-width: #{$desktop - 1}) {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @media (min-width: #{$mobile}) {
+        @content;
+    }
+}
