@@ -125,14 +125,6 @@ new Builders_Plugin();
 register_activation_hook(__FILE__, __NAMESPACE__ . '\rewrite_flush_on_activation');
 function rewrite_flush_on_activation()
 {
-    //Avoid nasty bugs
-    if (get_role('gym_member')) {
-        remove_role('gym_member');
-    }
-
-    add_role('gym_member', 'Gym Member', array(
-        'read'  => true
-    ));
 
     // Information needed for creating the plugin's pages
     $page_definitions = array(
@@ -143,7 +135,7 @@ function rewrite_flush_on_activation()
         ),
         'sign-in' => array(
             'title' => __('Sign In', 'builders-plugin'),
-            'content'   => '[revolt-login-form]',
+            'content'   => '',
             'template'  => ''
         ),
         'registration'  => array(
@@ -194,7 +186,7 @@ function insert_pages($page_definitions)
                     'ping_status'    => 'closed',
                     'comment_status' => 'closed',
                     'meta_input'     => array(
-                        'inserted'   => 'builders-plugin' //refer to inc/revolt-meta-posts.php : used for adding post states
+                        'inserted'   => 'builders-plugin' //used for adding post states in utilities.php
                     )
                 )
             );
@@ -217,7 +209,7 @@ function insert_pages($page_definitions)
                         'ping_status'    => 'closed',
                         'comment_status' => 'closed',
                         'meta_input'     => array(
-                            'inserted'   => 'revolt' //refer to inc/revolt-meta-posts.php : used for adding post states
+                            'inserted'   => 'builders-plugin' // used for adding post states in utilities.php
                         )
                     )
                 );
@@ -236,5 +228,11 @@ function on_deactivation()
     //Remove custom roles
     if (get_role('gym_member')) {
         remove_role('gym_member');
+    }
+    if (get_role('gym_trainer')) {
+        remove_role('gym_trainer');
+    }
+    if (get_role('gym_admin')) {
+        remove_role('gym_admin');
     }
 };
