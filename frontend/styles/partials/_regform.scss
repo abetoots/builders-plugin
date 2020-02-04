@@ -1,0 +1,63 @@
+.RegForm {
+    max-width: 600px;
+    margin: 0 auto;
+
+    &__notification {
+        &.-success {
+            background-color: rgb(170, 230, 138);
+            color: rgb(52, 148, 1);
+            padding: 15px;
+        }
+
+        &.-error {
+            background-color: rgb(230, 138, 138);
+            color: rgb(148, 18, 1);
+        }
+    }
+
+    &__notifMsg {
+        margin: 0;
+    }
+
+    &__title {
+        text-transform: uppercase;
+    }
+
+    &__slot {
+        &.-submit {
+            display: flex;
+            justify-content: center;
+
+        }
+    }
+
+    &__submitBtn {
+        box-sizing: border-box;
+        cursor: pointer;
+        border: none;
+        border-bottom: 2px solid #1AB2F7;
+        border-radius: 4px;
+        background-color: transparent;
+        -webkit-tap-highlight-color: transparent;
+        color: rgb(26, 115, 232);
+        height: 40px;
+        padding: 0 15px;
+        transition: all .15s ease;
+        text-transform: uppercase;
+
+        &:hover {
+            background-color: rgb(210, 223, 245);
+        }
+    }
+
+    &__datepicker {
+        border: 1px solid #c3c3c3;
+        height: 36px;
+        line-height: 36px;
+        width: 100%;
+        padding: 8px;
+        max-width: 360px;
+        border-radius: 3px;
+        background: #fff;
+    }
+}

@@ -1,0 +1,8 @@
+//any file that outputs css should be imported here
+//remove normalize font , try using typography.js
+@import './tools/mixins';
+
+//partials
+@import './partials/input';
+@import './partials/regform';
+@import './partials/loginform';

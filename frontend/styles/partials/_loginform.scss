@@ -1,0 +1,33 @@
+.LoginForm {
+    box-sizing: border-box;
+    max-width: 600px;
+    margin: 0 auto;
+
+    &__username,
+    &__password,
+    &__submit {
+        padding: 10px 0;
+    }
+
+
+    &__submitBtn {
+        cursor: pointer;
+        font-family: inherit;
+        border: none;
+        padding: 10px 0;
+        width: 100%;
+        border-radius: 5px;
+        background-color: #3551F1;
+        color: white;
+        @include fluid-type(320px, 1200px, 16px, 22px, 'font-size');
+    }
+
+    &__input {
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: none;
+        padding: 5px 8px;
+        background-color: transparent;
+        width: 100%;
+    }
+}
