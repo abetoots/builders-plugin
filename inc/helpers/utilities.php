@@ -17,6 +17,7 @@ function enqueue_scripts_frontend()
         date('ymd-Gis', filemtime(BUILDERS_PLUGIN_DIR . '/frontend/styles/styles.min.css')),
         'all'
     );
+
     if (is_page('registration')) {
         wp_enqueue_script(
             'builders-plugin-input',
@@ -36,7 +37,7 @@ function enqueue_scripts_frontend()
             'datepickerjs-styles',
             BUILDERS_PLUGIN_URL . '/frontend/third-party/flatpickr.min.css',
             array(),
-            date('ymd-Gis', filemtime(BUILDERS_PLUGIN_DIR . '/frontend/styles/datepicker.min.css')),
+            date('ymd-Gis', filemtime(BUILDERS_PLUGIN_DIR . '/frontend/third-party/flatpickr.min.css')),
             'all'
         );
         wp_enqueue_script(
@@ -76,7 +77,7 @@ function update_new_user_meta($user_id)
 }
 
 /**
- * Redirects users based on their role
+ * Redirects users trying to access wp-admin based on their role
  *
  * @uses wp_get_current_user()          Returns a WP_User object for the current user
  * @uses wp_redirect()                  Redirects the user to the specified URL
