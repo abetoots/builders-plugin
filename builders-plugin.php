@@ -20,6 +20,10 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 define('BUILDERS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BUILDERS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('BUILDERS_PLUGIN_APP_MANIFEST', plugin_dir_url(__FILE__) . '/build/asset-manifest.json');
+
+define('BUILDERS_ACF_DIR', plugin_dir_path(__FILE__) . '/libraries/advanced-custom-fields-pro/');
+define('BUILDERS_ACF_URL', plugin_dir_path(__FILE__) . 'libraries/advanced-custom-fields-pro/');
 
 final class Builders_Plugin
 {
@@ -39,6 +43,14 @@ final class Builders_Plugin
      * @var string Minimum PHP version required to run the plugin.
      */
     const MINIMUM_PHP_VERSION = '7.0';
+
+    /**
+     * Minimum ACF Version
+     *
+     * @since 1.0.0
+     * @var string Minimum ACF version required to run the plugin.
+     */
+    const MINIMUM_ACF_VERSION = '5.2.8';
 
     /**
      * Constructor
@@ -89,10 +101,21 @@ final class Builders_Plugin
             return;
         }
 
+        //Check if WPGraphQl is installed and activated
+        if (!in_array('wp-graphql/wp-graphql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+            add_action('admin_notices', array($this, 'admin_notice_required_wp_graphql'));
+            return;
+        }
+
+        //Check if WPGrapihQl is installed and activated
+        if (!in_array('wp-graphiql/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+            add_action('admin_notices', array($this, 'admin_notice_required_wp_grapihql'));
+            return;
+        }
+
         // Once we get here, We have passed all validation checks so we can safely include our plugin
         require_once('plugin.php');
     }
-
 
     /**
      * Admin notice - PHP Version
@@ -118,6 +141,56 @@ final class Builders_Plugin
 
         printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
     }
+
+    /**
+     * Admin notice - WPGraphQL
+     *
+     * Warning when the site doesn't WPGraphQL installed and activated
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function admin_notice_required_wp_graphql()
+    {
+        if (isset($_GET['activate'])) {
+            unset($_GET['activate']);
+        }
+
+        $message = sprintf(
+            /* translators: 1: Plugin name 2: WPGraphQL PHP 3: WPGraphQL url */
+            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('WPGraphQL', 'builders-plugin') . '</strong>',
+            '<a href="https://github.com/wp-graphql/wp-graphql/releases">Go to plugin</a>'
+        );
+
+        printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+    }
+
+    /**
+     * Admin notice - WPGrapihQL
+     *
+     * Warning when the site doesn't WPGraphiQL installed and activated
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function admin_notice_required_wp_graphiql()
+    {
+        if (isset($_GET['activate'])) {
+            unset($_GET['activate']);
+        }
+
+        $message = sprintf(
+            /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
+            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
+            '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
+        );
+
+        printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+    }
 }
 // Instantiate Builders Plugin
 new Builders_Plugin();
@@ -131,7 +204,7 @@ function rewrite_flush_on_activation()
         'dashboard'      => array(
             'title'     => __('Dashboard', 'builders-plugin'),
             'content'   => '',
-            'template'  => ''
+            'template'  => 'react-app.php'
         ),
         'sign-in' => array(
             'title' => __('Sign In', 'builders-plugin'),
@@ -190,6 +263,11 @@ function insert_pages($page_definitions)
                     )
                 )
             );
+
+            //Specify which pages are react apps
+            if ($slug === 'dashboard') {
+                update_option('react-dashboard', $id);
+            }
 
             // For some reason, post_template is not working. We update it manually.
             if ($template !== '') {
