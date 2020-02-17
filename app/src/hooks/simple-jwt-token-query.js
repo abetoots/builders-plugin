@@ -43,10 +43,14 @@ export const useNewTokenSimpleJwt = () => {
           .catch(err => {
             console.log("DEV:Token not valid. Fetching new one... ", [err]);
             //Token is invalid, fetch for a new one
+            let password =
+              process.env.NODE_ENV === "development"
+                ? process.env.PASSWORD_DEV
+                : process.env.PASSWORD_PROD;
             fetch(
               BASE_URL +
                 TOKEN +
-                `?username=${process.env.LOGIN}&password=${process.env.PASSWORD}`
+                `?username=${process.env.LOGIN}&password=${password}`
             )
               .then(res => {
                 if (res.ok) {
@@ -80,10 +84,14 @@ export const useNewTokenSimpleJwt = () => {
       } else {
         console.log("DEV: No token found on init. Fetching ...");
         // if no token is found, we go ahead and fetch one !DEV ONLY
+        let password =
+          process.env.NODE_ENV === "development"
+            ? process.env.PASSWORD_DEV
+            : process.env.PASSWORD_PROD;
         let request = new Request(
           BASE_URL +
             TOKEN +
-            `?username=${process.env.LOGIN}&password=${process.env.PASSWORD}`,
+            `?username=${process.env.LOGIN}&password=${password}`,
           {
             method: "POST"
           }
