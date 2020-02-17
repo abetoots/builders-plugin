@@ -51,12 +51,12 @@ function enqueue_react_scripts()
 
             //enqueue our main css
             if (isset($asset_manifest['main.css'])) {
-                wp_enqueue_style('react-main-style', get_site_url() . $asset_manifest['main.css']);
+                wp_enqueue_style('react-main-style', BUILDERS_PLUGIN_URL . 'build/' . $asset_manifest['main.css']);
             }
 
             //always enqueue our runtime and main js files
-            wp_enqueue_script('react-runtime', get_site_url() . $asset_manifest['runtime-main.js'], array(), null, true);
-            wp_enqueue_script('react-main-script', get_site_url() . $asset_manifest['main.js'], array('react-runtime'), null, true);
+            wp_enqueue_script('react-runtime', BUILDERS_PLUGIN_URL . 'build/' . $asset_manifest['runtime-main.js'], array(), null, true);
+            wp_enqueue_script('react-main-script', BUILDERS_PLUGIN_URL . 'build/' . $asset_manifest['main.js'], array('react-runtime'), null, true);
 
             //Localize some vars
             wp_localize_script('react-main-script', 'revoltReact', array(
@@ -69,28 +69,28 @@ function enqueue_react_scripts()
                 if (preg_match('@static/js/(.*)\.chunk\.js@', $key, $matches)) {
                     if ($matches && is_array($matches) && count($matches) === 2) {
                         $name = "react-" . preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                        wp_enqueue_script($name, get_site_url() . $value, array('react-main-script'), null, true);
+                        wp_enqueue_script($name, BUILDERS_PLUGIN_URL . 'build/' . $value, array('react-main-script'), null, true);
                     }
                 }
                 //FOR CREATE REACT APPS
                 if (preg_match('@static/css/(.*)\.chunk\.css@', $key, $matches)) {
                     if ($matches && is_array($matches) && count($matches) == 2) {
                         $name = "react-" . preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                        wp_enqueue_style($name, get_site_url() . $value, array('react-main-style'), null);
+                        wp_enqueue_style($name, BUILDERS_PLUGIN_URL . 'build/' . $value, array('react-main-style'), null);
                     }
                 }
                 //WEBPACK REACT APPS
                 if (preg_match('(.*)\.chunk\.js@', $key, $matches)) {
                     if ($matches && is_array($matches) && count($matches) === 2) {
                         $name = "react-" . preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                        wp_enqueue_script($name, get_site_url() . $value, array('react-main-script'), null, true);
+                        wp_enqueue_script($name, BUILDERS_PLUGIN_URL . 'build/' . $value, array('react-main-script'), null, true);
                     }
                 }
                 //WEBPACK REACT APPS
                 if (preg_match('(.*)\.chunk\.css@', $key, $matches)) {
                     if ($matches && is_array($matches) && count($matches) == 2) {
                         $name = "react-" . preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                        wp_enqueue_style($name, get_site_url() . $value, array('react-main-style'), null);
+                        wp_enqueue_style($name, BUILDERS_PLUGIN_URL . 'build/' . $value, array('react-main-style'), null);
                     }
                 }
             }
