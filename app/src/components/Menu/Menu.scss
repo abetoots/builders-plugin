@@ -1,0 +1,47 @@
+.Menu {
+    $self: &;
+    font-weight: 700;
+    margin: 0 auto;
+
+    &.-desktopOnly {
+        display: none;
+
+        @include media-query($medium-up) {
+            display: block;
+        }
+    }
+
+    &.-hidden {
+        visibility: hidden;
+    }
+
+    &__ul {
+        list-style: none;
+        margin: 0;
+        padding: 1rem;
+
+        &.-horizontal {
+            display: flex;
+
+            #{$self}__li {
+                padding: 0 15px;
+            }
+
+        }
+    }
+
+    &__link {
+        text-decoration: none;
+        color: black;
+
+        &.active {
+            color: #d9121f;
+        }
+    }
+
+    &__touchTarget {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+}
