@@ -2,7 +2,6 @@
 
 namespace Builders_Plugin;
 
-
 /**
  * Class Plugin
  *
@@ -11,35 +10,6 @@ namespace Builders_Plugin;
  */
 class Plugin
 {
-    /**
-     * Instance
-     *
-     * @since 1.0.0
-     * @access private
-     * @static
-     *
-     * @var Plugin The single instance of the class.
-     */
-    private static $_instance = null;
-
-    /**
-     * Instance
-     *
-     * Ensures only one instance of the class is loaded or can be loaded.
-     *
-     * @since 1.0.0
-     * @access public
-     *
-     * @return Plugin An instance of the class.
-     */
-    public static function instance()
-    {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance;
-    }
 
     /**
      * Include Class Files
@@ -49,10 +19,13 @@ class Plugin
      */
     private function include_class_files()
     {
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/handle-member-registration.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/member-registration.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/login.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/api.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/react.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/registration.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/utilities.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/acf.php');
         require_once(BUILDERS_PLUGIN_DIR . 'admin/settings.php');
     }
 
@@ -105,12 +78,71 @@ class Plugin
             $trainer->add_cap($c);
         };
 
+        $trainer = get_role('administrator');
+        $trainer_caps = [
+            'list_gym_members'
+        ];
+        foreach ($trainer_caps as $c) {
+            $trainer->add_cap($c);
+        };
+
         //         $admin = get_role('gym_admin');
         // $admin_caps = [
 
         // ];
     }
 
+    /**
+     * Include libraries
+     *
+     * @since 1.0.0
+     * @access private
+     */
+    private function include_libraries()
+    {
+        if (!class_exists('ACF') || !function_exists('get_field')) {
+            include_once(BUILDERS_ACF_DIR . 'acf.php');
+        }
+    }
+
+    /**
+     * Scripts only meant to run on development
+     * Dev scripts are git ignored
+     */
+    public static function enable_dev_scripts()
+    {
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/dev-scripts.php');
+    }
+
+    /**
+     * Instance
+     *
+     * @since 1.0.0
+     * @access private
+     * @static
+     *
+     * @var Plugin The single instance of the class.
+     */
+    private static $_instance = null;
+
+    /**
+     * Instance
+     *
+     * Ensures only one instance of the class is loaded or can be loaded.
+     *
+     * @since 1.0.0
+     * @access public
+     *
+     * @return Plugin An instance of the class.
+     */
+    public static function instance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
 
     /**
      *  Plugin class constructor
@@ -123,6 +155,7 @@ class Plugin
     public function __construct()
     {
         $this->include_class_files();
+        $this->include_libraries();
 
         //Add gym roles
         add_action("init", array($this, 'define_initial_roles'));
@@ -132,3 +165,5 @@ class Plugin
 }
 // Instantiate Plugin Class
 Plugin::instance();
+//Dev only
+// Plugin::enable_dev_scripts();
