@@ -1,0 +1,30 @@
+.Header {
+    background-color: white;
+    box-shadow: 0 1px 3px 1px #ccc;
+
+    &__slot {
+        &.-horizontal {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
+.HeaderWrap {
+    &__slot {
+        &.-menu {
+            transition: all .3s ease-in;
+            z-index: 101;
+            background-color: white;
+            border-radius: 5px;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+
+            @include media-query($medium-up) {
+                position: initial;
+            }
+        }
+    }
+
+}
