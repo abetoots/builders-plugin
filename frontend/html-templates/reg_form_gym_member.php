@@ -73,9 +73,9 @@
             </div>
         </div>
 
-         <div class="RegForm__slot -email">
+        <div class="RegForm__slot -is_student">
             <div class="Input">
-                <label for="student-toggle" class="Input__label"><?php _e('Student ?', 'builders-plugin'); ?> <strong style="color: red">*</strong></label>
+                <label for="student-toggle" class="Input__label"><?php _e('Student ?', 'builders-plugin'); ?></label>
                 <div class="Input__slot -relative">
                     <input id="student-toggle" class="Input__checkboxInput" type="checkbox" name="is_student" value="1" />
                 </div>
@@ -90,6 +90,19 @@
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="no-say">Prefer not to say</option>
+                    </select>
+                    <div class="Input__line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="RegForm__slot -branch">
+            <div class="Input">
+                <label for="branch" class="Input__label"><?php _e('Branch', 'builders-plugin'); ?> <strong style="color: red">*</strong></label>
+                <div class="Input__slot -relative">
+                    <select id="branch" class="Input__inputEl" name="branch">
+                        <option value="la_trinidad">La Trinidad</option>
+                        <option value="baguio">Baguio</option>
                     </select>
                     <div class="Input__line"></div>
                 </div>
