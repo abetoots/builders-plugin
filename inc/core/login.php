@@ -3,10 +3,6 @@
 namespace Builders_Plugin\Inc\Core;
 
 use WP_Error;
-use function Builders_Plugin\Inc\Helpers\Registration\{
-    get_template_html,
-    get_error_message
-};
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
@@ -84,7 +80,7 @@ class Login
             $error_codes = explode(',', $_REQUEST['login-err']);
 
             foreach ($error_codes as $code) {
-                $attributes['errors'][] = get_error_message($code);
+                $attributes['errors'][] = \Builders_Plugin\Inc\Helpers\Registration::instance()->get_error_message($code);
             }
         }
 
@@ -92,7 +88,7 @@ class Login
         $attributes['logged_out'] = isset($_REQUEST['logged_out']) && $_REQUEST['logged_out'] == true;
 
         // Render the login form using an external template
-        return get_template_html('login_form', $attributes);
+        return \Builders_Plugin\Inc\Helpers\Registration::instance()->get_template_html('login_form', $attributes);
     }
 
     /**
@@ -114,7 +110,11 @@ class Login
         }
         //Gym trainers and admins are redirected to dashboard
         if (user_can($user, 'list_gym_members')) {
-            $redirect_url = home_url('dashboard');
+            if (user_can($user, 'manage_options')) {
+                $redirect_url = admin_url();
+            } else {
+                $redirect_url = home_url('dashboard');
+            }
         }
         return wp_validate_redirect($redirect_url, home_url());
     }
@@ -129,8 +129,8 @@ class Login
             if (is_user_logged_in()) {
                 $user = wp_get_current_user();
                 $role_name = $user->roles[0];
-                // if current user is employer
-                if ($role_name === 'employer' || $role_name === 'jobseeker') {
+                // if current user are gym staff
+                if ($role_name === 'gym_trainer' || $role_name === 'gym_admin') {
                     wp_redirect(home_url(), 403);
                 } else {
                     wp_redirect(admin_url());
@@ -138,7 +138,7 @@ class Login
                 exit;
             }
         } else if (isset($_POST['wp-submit'])) {
-            // prevent access to employers/jobseekers trying to login through wp-login.php
+            // prevent access to gym trainers/admins trying to login through wp-login.php
             if ($_POST['wp-submit'] === "Log In") {
                 if (is_email($_POST['log'])) {
                     $user = get_user_by('email', $_POST['log']);
@@ -147,7 +147,7 @@ class Login
                 }
 
                 $role = $user->roles[0];
-                if ($role === 'jobseeker' || $role === 'employer') {
+                if ($role === 'gym_trainer' || $role === 'gym_admin') {
                     wp_redirect(home_url(), 403);
                     exit;
                 }
@@ -156,7 +156,7 @@ class Login
     }
 
     /**
-     * Redirect to custom login page ONLY if current user is employer/jobseeker
+     * Redirect to custom login page ONLY if current user are gym staff
      *
      */
     public function redirect_after_logout()
@@ -186,7 +186,7 @@ class Login
         // the default WordPress authentication) functions have found errors
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $role_name = $user->roles[0];
-            if (is_wp_error($user) && $role_name === 'employer' || is_wp_error($user) && $role_name === 'jobseeker') {
+            if (is_wp_error($user) && $role_name === 'gym_trainer' || is_wp_error($user) && $role_name === 'gym_admin') {
                 $error_codes = join(',', $user->get_error_codes());
 
                 $login_url = home_url('sign-in');
