@@ -13,13 +13,18 @@ export const REFTOKEN = "refreshToken";
 let timerId;
 let delay;
 
+let password =
+  process.env.NODE_ENV === "development"
+    ? process.env.PASSWORD_DEV
+    : process.env.PASSWORD_PROD;
+
 const loginMutation = gql`
     mutation LoginUser{
       login(
         input: {
           clientMutationId: ""
           username: "${process.env.LOGIN}"
-          password: "${process.env.PASSWORD}"
+          password: "${password}"
         }
       ) {
         authToken
@@ -30,7 +35,7 @@ const loginMutation = gql`
       }
     }
   `;
-console.log(localStorage.getItem(REFTOKEN));
+console.log("refresh token: ", localStorage.getItem(REFTOKEN));
 const refreshMutation = `
     mutation RefreshToken {
       refreshJwtAuthToken(
@@ -52,7 +57,7 @@ export const useLoginMutation = () => {
         console.log("Mutation done", [data]);
       },
       onError: err => {
-        console.log("Mutation error:"[err]);
+        console.log("Mutation error:", [err]);
       }
     }
   );
@@ -65,6 +70,8 @@ export const useLoginMutation = () => {
       localStorage.setItem(EXPDATE, data.login.user.jwtAuthExpiration);
       silentlyRefresh();
       //Triggers a rerender so that tokenCache.token will be defined for our app
+      setDone(true);
+    } else {
       setDone(true);
     }
   }, [data]);
