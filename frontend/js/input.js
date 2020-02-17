@@ -1,6 +1,5 @@
 //Handles adding / removing a focsed class on focus or blur events of our inputs
 const form = document.querySelector("#RegForm");
-console.log(form);
 const inputs = form.querySelectorAll(".Input__inputEl");
 function toggleInputFocus(event) {
   if (event.type === "focus") {
