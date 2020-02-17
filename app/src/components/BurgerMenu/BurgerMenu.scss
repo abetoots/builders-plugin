@@ -1,0 +1,66 @@
+.BurgerMenu {
+    $self: &;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: transparent;
+    display: block;
+    border: none;
+    margin: 0 5px;
+    height: fit-content;
+    align-self: center;
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+    &__bar {
+        //Selector for the bars
+        width: 2rem;
+        height: 2px;
+        background-color: #000;
+        margin-bottom: calc(1rem / 3);
+        border-radius: 5px;
+        transition: all 0.5s cubic-bezier(0.77, 0.2, 0.1, 1);
+
+        &.-one {
+            transform-origin: top left;
+        }
+
+        &.-three {
+            transform-origin: bottom left;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &.-toggled {
+        #{$self}__bar {
+            background-color: #15dfbc;
+
+            &.-one {
+                //calculated using inverse tangent ( opposite: height of button / adjacent: width of button )
+                transform: translateX(4px) rotate(27.5deg);
+            }
+
+            &.-two {
+                opacity: 0;
+                transform: scale(0.2, 0.2);
+            }
+
+            &.-three {
+                //calculated using inverse tangent ( opposite: height of button / adjacent: width of button )
+                transform: translateX(4px) rotate(-27.5deg);
+            }
+        }
+    }
+
+    &__label {
+        display: block;
+        text-transform: uppercase;
+        font-size: 10px;
+
+        &.-hidden {
+            @include visually-hidden;
+        }
+    }
+}
