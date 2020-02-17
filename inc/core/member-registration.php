@@ -3,17 +3,12 @@
 namespace Builders_Plugin\Inc\Core;
 
 use WP_Error;
-use function Builders_Plugin\Inc\Helpers\Registration\{
-    get_template_html,
-    get_error_message,
-    verify_recaptcha,
-    validate_and_register_new_user
-};
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 class Member_Registration
 {
+
     /**
      * A shortcode for rendering the new user registration form.
      *
@@ -57,12 +52,12 @@ class Member_Registration
                 $error_codes = explode(',', $_REQUEST['registration-err']);
 
                 foreach ($error_codes as $error_code) {
-                    $attributes['errors'][] = get_error_message($error_code);
+                    $attributes['errors'][] = \Builders_Plugin\Inc\Helpers\Registration::instance()->get_error_message($error_code);
                 }
             }
 
             // Rendering of html is done here
-            return get_template_html('reg_form_gym_member', $attributes);
+            return \Builders_Plugin\Inc\Helpers\Registration::instance()->get_template_html('reg_form_gym_member', $attributes);
         }
     }
 
@@ -95,9 +90,19 @@ class Member_Registration
         $fullname =  $_POST['full_name'];
         $email =  $_POST['email'];
         $gender = $_POST['gender'];
+        $birthdate = $_POST['birthdate'];
+        $isStudent = $_POST['is_student'];
+        $branch = $_POST['branch'];
 
         //Handles validation and redirect
-        $this->do_register_member($fullname, $email, $gender);
+        $this->do_register_member(
+            $fullname,
+            $email,
+            $gender,
+            $birthdate,
+            $isStudent,
+            $branch
+        );
     }
 
 
@@ -110,7 +115,7 @@ class Member_Registration
      * 
      * @uses $this->validate_and_register_new_user()
      */
-    public function do_register_member($fullname, $email, $gender)
+    public function do_register_member($fullname, $email, $gender, $birthdate, $isStudent, $branch)
     {
         $redirect_url = home_url('registration');
         $errors = new WP_Error();
@@ -119,13 +124,21 @@ class Member_Registration
             // Portal registration disabled, display error
             $redirect_url = add_query_arg('registration-err', 'disabled', $redirect_url);
         } elseif (get_option('builders_plugin_recaptcha_site_key') && get_option('builders_plugin_recaptcha_secret_key')) {
-            if (!verify_recaptcha()) {
+            if (!\Builders_Plugin\Inc\Helpers\Registration::instance()->verify_recaptcha()) {
                 //Recaptcha check failed, display error
                 $redirect_url = add_query_arg('registration-err', 'captcha', $redirect_url);
             }
         } else {
             //either an error or the user id
-            $result = validate_and_register_new_user($fullname, $email, $gender, 'gym_member');
+            $result = \Builders_Plugin\Inc\Helpers\Registration::instance()->validate_and_register_new_user(
+                $fullname,
+                $email,
+                $gender,
+                $birthdate,
+                $isStudent,
+                $branch,
+                'gym_member'
+            );
 
             if (is_wp_error($result)) {
                 // Parse errors into a string and append as parameter to redirect
