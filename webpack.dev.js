@@ -17,7 +17,8 @@ module.exports = merge(common, {
     }),
     new webpack.DefinePlugin({
       BASE_URL: JSON.stringify("http://localhost/builders/"),
-      BASE_API_URL: JSON.stringify("http://localhost/builders/wp-json/wp/v2/")
+      BASE_API_URL: JSON.stringify("http://localhost/builders/wp-json/wp/v2/"),
+      BASENAME: JSON.stringify("/builders")
     })
   ],
   module: {

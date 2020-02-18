@@ -27,7 +27,8 @@ module.exports = merge(common, {
     }),
     new webpack.DefinePlugin({
       BASE_URL: JSON.stringify("/"),
-      BASE_API_URL: JSON.stringify("/wp-json/wp/v2/")
+      BASE_API_URL: JSON.stringify("/wp-json/wp/v2/"),
+      BASENAME: JSON.stringify("/dashboard")
     }),
     new MiniCssExtractPlugin({ filename: "[name].[contentHash].css" }),
     new webpack.HashedModuleIdsPlugin(), // so that file hashes don't change unexpectedly
