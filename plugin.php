@@ -21,6 +21,7 @@ class Plugin
     {
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/member-registration.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/login.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/logout.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/api.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/react.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/registration.php');

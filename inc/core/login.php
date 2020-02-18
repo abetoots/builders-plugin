@@ -6,7 +6,6 @@ use WP_Error;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-
 class Login
 {
 
@@ -155,20 +154,7 @@ class Login
         }
     }
 
-    /**
-     * Redirect to custom login page ONLY if current user are gym staff
-     *
-     */
-    public function redirect_after_logout()
-    {
-        $user = wp_get_current_user();
-        $role_name = $user->roles[0];
-        if ($role_name === 'gym_trainer' || $role_name === 'gym_admin') {
-            $redirect_url = home_url('sign-in?logged_out=true');
-            wp_safe_redirect($redirect_url);
-            exit;
-        }
-    }
+
 
     /**
      * After authentication, if there were any errors, redirect the user to custom page we created
@@ -255,11 +241,6 @@ class Login
          * 
          */
         add_filter('authenticate', array($this, 'maybe_redirect_at_authenticate'), 101, 3);
-
-        /**
-         * Do our own logout redirects before WordPress redirects the user back to wp-login.php.
-         */
-        add_action('wp_logout', array($this, 'redirect_after_logout'));
     }
 }
 
