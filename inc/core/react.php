@@ -40,7 +40,7 @@ function enqueue_react_scripts()
             // wp_enqueue_script('react-main-script3', 'http://localhost:3000/static/js/0.chunk.js', array(), null, true);
             // wp_enqueue_script('react-main-script4', 'http://localhost:3000/static/js/1.chunk.js', array(), null, true);
             // wp_enqueue_script('react-main-script2', 'http://localhost:3000/static/js/main.chunk.js', array(), null, true);
-            wp_enqueue_script('react-dev-script', 'http://localhost:8080/builders/main.bundle.js', array(), null, true);
+            wp_enqueue_script('react-main-script', 'http://localhost:8080/builders/main.bundle.js', array(), null, true);
             wp_enqueue_script('react-dev-script0', 'http://localhost:8080/builders/0.bundle.js', array(), null, true);
             wp_enqueue_script('react-dev-script1', 'http://localhost:8080/builders/1.bundle.js', array(), null, true);
             wp_enqueue_script('react-dev-script2', 'http://localhost:8080/builders/2.bundle.js', array(), null, true);
@@ -57,11 +57,6 @@ function enqueue_react_scripts()
             //always enqueue our runtime and main js files
             wp_enqueue_script('react-runtime', BUILDERS_PLUGIN_URL . 'build/' . $asset_manifest['runtime-main.js'], array(), null, true);
             wp_enqueue_script('react-main-script', BUILDERS_PLUGIN_URL . 'build/' . $asset_manifest['main.js'], array('react-runtime'), null, true);
-
-            //Localize some vars
-            wp_localize_script('react-main-script', 'revoltReact', array(
-                'nonce'     => wp_create_nonce('wp_rest'),
-            ));
 
             //enqueue js and css chunks
             foreach ($asset_manifest as $key => $value) {
@@ -95,5 +90,11 @@ function enqueue_react_scripts()
                 }
             }
         }
+
+        //Localize some vars
+        wp_localize_script('react-main-script', 'WPReact', array(
+            'rest_nonce'     => wp_create_nonce('wp_rest'),
+            'logout_nonce'  => wp_create_nonce('wpreact_logout_nonce')
+        ));
     } // end check if page dashboard
 }
