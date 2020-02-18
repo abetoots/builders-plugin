@@ -1,5 +1,5 @@
 import DxGrid from "../components/DXGrid/DXGrid";
-
+import WPLogout from "../components/WPLogout/WPLogout";
 import asyncComponent from "../components/asyncComponent/asyncComponent";
 
 //Lazy load all components except the component for root or home
@@ -22,7 +22,7 @@ export const defaultLinkList = [
   {
     path: "/logout",
     exact: true,
-    component: null,
+    component: WPLogout,
     label: "Logout"
   }
 ];
@@ -39,5 +39,11 @@ export const devLinkList = [
     exact: true,
     component: AsyncGraphiQlWrap,
     label: "GraphiQlIDE"
+  },
+  {
+    path: "/logout",
+    exact: true,
+    component: WPLogout,
+    label: "Logout"
   }
 ];
