@@ -38,7 +38,7 @@ const App = () => {
   }, []);
 
   return (
-    <BrowserRouter basename="/builders">
+    <BrowserRouter basename={BASENAME}>
       <Boundary
         loading={loadingRefresh || loadingLogin}
         error={errorRefresh || errorLogin}
