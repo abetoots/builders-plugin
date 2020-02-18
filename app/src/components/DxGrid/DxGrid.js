@@ -124,7 +124,7 @@ const DxGrid = () => {
 
   return (
     <Layout
-      loading={loading}
+      loading={loading || !called}
       error={error}
       linklist={process.env.NODE_ENV === "development" ? devLinkList : false}
     >
