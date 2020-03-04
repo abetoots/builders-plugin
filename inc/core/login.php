@@ -2,6 +2,7 @@
 
 namespace Builders_Plugin\Inc\Core;
 
+use Builders_Plugin\Inc\Helpers\Validation;
 use WP_Error;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
@@ -79,7 +80,7 @@ class Login
             $error_codes = explode(',', $_REQUEST['login-err']);
 
             foreach ($error_codes as $code) {
-                $attributes['errors'][] = \Builders_Plugin\Inc\Helpers\Registration::instance()->get_error_message($code);
+                $attributes['errors'][] = Validation::instance()->get_error_message($code);
             }
         }
 
@@ -87,7 +88,7 @@ class Login
         $attributes['logged_out'] = isset($_REQUEST['logged_out']) && $_REQUEST['logged_out'] == true;
 
         // Render the login form using an external template
-        return \Builders_Plugin\Inc\Helpers\Registration::instance()->get_template_html('login_form', $attributes);
+        return Validation::instance()->get_template_html('login_form', $attributes);
     }
 
     /**
