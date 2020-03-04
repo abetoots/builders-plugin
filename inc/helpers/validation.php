@@ -2,183 +2,120 @@
 
 namespace Builders_Plugin\Inc\Helpers;
 
+use const Builders_Plugin\Constants\PLUGIN_PREFIX;
 use WP_Error;
 use DateTime;
 use WPGraphQL;
 
 if (!defined('ABSPATH')) exit;
 
-const VALIDDATEFORMAT = 'Ymd';
-
-class Registration
+class Validation
 {
-    /**
-     * Define the metas to be registered in register_meta and register_graphql_field
-     */
-    public static $metas = array(
-        'full_name' => array(
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ),
-        'gender'    => array(
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ),
-        'birthdate' => array(
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ),
-        'is_student'  => array(
-            'type'  => 'number',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ),
-        'gym_role'  => array(
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User'
-        ),
-        'branch'  => array(
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User'
-        ),
-    );
 
-    /**
-     * Define user metas and show in REST API
-     * TODO register our fields to the WPGraphQL Schema
-     * see https://docs.wpgraphql.com/getting-started/custom-fields-and-meta/
-     */
-
-    private function register_user_metas()
+    public function build_errors($errors)
     {
-        foreach ($this::$metas as $key => $val) {
-            register_meta($val['obj_type'], $key, array(
-                "type" => $val['type'],
-                "show_in_rest" => $val['rest']
-            ));
+        $wp_error = new WP_Error();
+        foreach ($errors as $error) {
+            $wp_error->add($error, $this->get_error_message($error));
         }
-    }
-
-    public function register_user_metas_in_wpgraphql()
-    {
-        foreach ($this::$metas as $key => $val) {
-            register_graphql_field($val['obj_type'], $key, array(
-                //The schema only has 'Int' type, everything else convert to uppercase
-                'type' => $val['type'] === 'number' ? 'Int' : strtoupper($val['type']),
-                'resolve' => function ($obj, $dunno, $app_context, $resolve_info) {
-                    if ($resolve_info->fieldName === 'gym_role') {
-                        $role = get_userdata($obj->userId)->roles[0];
-                        if ($role === 'gym_member' || $role === 'gym_trainer' || $role === 'gym_admin' || $role === 'administrator') {
-                            return $role;
-                        }
-                    } elseif ($resolve_info->returnType->name === 'Int') {
-                        $return = get_user_meta($obj->userId, $resolve_info->fieldName, true) || 0;
-                        return $return;
-                    } else {
-                        $return = get_user_meta($obj->userId, $resolve_info->fieldName, true);
-                        return $return;
-                    }
-                }
-            ));
-        }
+        return $wp_error;
     }
 
     /**
-     * Validates and then completes the new employer signup process if all went well.
+     * Validates the user and returns true if validation is success
+     * 
+     * @param Object $data Associative array containing fields to validate
      *
-     * @param string $fullname          The new member's full name
-     * @param string $email             The new member's email address to be used also as username
-     * @param string $gender            The new member's gender
-     *
-     * @return int|WP_Error         The id of the user that was created, or error if failed.
+     * @return bool|WP_Error The id of the user that was updated, or error if failed.
      */
-    public function validate_and_register_new_user(
-        $fullname,
-        $email,
-        $gender,
-        $birthdate,
-        $isStudent,
-        $branch,
-        $role
-    ) {
+    public function validate_and_update_user($data)
+    {
         $errors = array();
 
-        if (empty($fullname) || empty($email) || empty($gender) || empty($birthdate) || empty($branch)) {
-            $errors = 'empty_field';
-        }
-
-        //Make sure the number of full name characters is not less than 4
-        if (4 > strlen($fullname)) {
-            $errors[] = 'username_length';
-        }
-
-        //Check if the username is already registered
-        if (username_exists($email)) {
-            $errors[] = 'username_exists';
-        }
-
-        //Make sure the username is valid
-        if (!validate_username($email)) {
-            $errors[] = 'invalid_username_register';
-        }
-
-        //Check if valid email
-        if (!is_email($email)) {
-            $errors[] = 'email';
-        }
-
-        //Check if email is already registered
-        if (email_exists($email)) {
-            $errors[] = 'email_exists';
-        }
-
-        //Validate date against a defined format 
-        if (!$this->validateDateFormat($birthdate)) {
-            $errors[] = 'birthdate_format';
-        }
-
-        //Birthdate should not exceed current date
-        if ($birthdate > date(VALIDDATEFORMAT)) {
-            $errors[] = 'birthdate_exceed';
-        }
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_update', $errors, $data);
 
         //return errors if any
         if (!empty($errors)) {
-            $wp_error = new WP_Error();
-            foreach ($errors as $error) {
-                $wp_error->add($error, $this->get_error_message($error));
-            }
-            return $wp_error;
+            return $this->build_errors($errors);
         }
 
-        //If we reach here, Sanitize before inserting user data
-        $email = sanitize_email($email);
-        $login = sanitize_key($fullname);
-        $fullname = sanitize_text_field($fullname);
-        $gender = sanitize_text_field($gender);
-        $birthdate = date(VALIDDATEFORMAT, strtotime($birthdate));
-        $isStudent = absint($isStudent);
-        $branch = sanitize_text_field($branch);
-        // Generate the password so that the subscriber will have to check email...
-        $password = wp_generate_password(12, false);
+        return true;
+    }
+
+    /**
+     * Validates and then completes the new user signup process if all went well.
+     * 
+     * @param Object $data Associative array containing new user
+     *
+     * @return int|WP_Error The id of the user that was created, or error if failed.
+     */
+    public function validate_and_register_new_user($data, $role)
+    {
+        $errors = array();
+
+        if (empty($role)) {
+            $role = 'subscriber';
+        }
+
+        //'username' must always be set. 'email' and 'password' can be optional so check only if it is set
+        if (empty($data['username']) || isset($data['email']) && empty($data['email']) || isset($data['password']) && empty($data['password'])) {
+            $errors = 'empty_field';
+        }
+
+        //make sure the length of 'username' is not less than 4
+        if (4 > strlen($data['username'])) {
+            $errors[] = 'username_length';
+        }
+
+        //check if the 'username' already exists
+        if (username_exists($data['username'])) {
+            $errors[] = 'username_exists';
+        }
+
+        //make sure the 'username' is valid
+        if (!validate_username($data['username'])) {
+            $errors[] = 'invalid_username_register';
+        }
+
+        //Only if it's set, check if 'email' is valid
+        if (isset($data['email']) && !is_email($data['email'])) {
+            $errors[] = 'email';
+        }
+
+        //Only if it's set, check if email already exists
+        if (isset($data['email']) && email_exists($data['email'])) {
+            $errors[] = 'email_exists';
+        }
+
+        //Do custom validations for this plugin
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_register', $errors, $data);
+
+        //return errors if any
+        if (!empty($errors)) {
+            return $this->build_errors($errors);
+        }
+
+        //If we reach here, sanitize before inserting user data
+        $dbEmail = '';
+        if (isset($data['email'])) {
+            $dbEmail = sanitize_email($data['email']);
+        }
+
+        //WP generated password is default if no password is set
+        $dbPassword = wp_generate_password(12, false);
+        if (isset($data['password'])) {
+            $dbPassword = $data['password'];
+        }
+
         $user_data = array(
-            'user_login'    => $login,
-            'user_email'    => $email,
-            'user_pass'     => $password,
+            'user_login'    => sanitize_key($data['username']),
+            'user_email'    => $dbEmail,
+            'user_pass'     => $dbPassword,
             'role'          => $role,
         );
-
         $user_id = wp_insert_user($user_data);
-        update_user_meta($user_id, 'full_name', $fullname);
-        update_user_meta($user_id, 'gender', $gender);
-        update_user_meta($user_id, 'birthdate', $birthdate);
-        update_user_meta($user_id, 'is_student', $isStudent);
-        update_user_meta($user_id, 'branch', $branch);
+
+        do_action('' . PLUGIN_PREFIX . '_after_success_insert_user', $user_id, $data, $role);
         //wp_new_user_notification( $user_id, $password );
 
         return $user_id;
@@ -219,11 +156,14 @@ class Registration
             case 'email_exists':
                 return __('An account exists with this email address.', 'builders-plugin');
 
-            case 'birthdate_format':
-                return __('Birthdate format invalid', 'builders-plugin');
+            case 'date_format':
+                return __('Date format invalid', 'builders-plugin');
 
-            case 'birthdate_exceed':
-                return __('Looks like you were born in the future', 'builders-plugin');
+            case 'date_exceed':
+                return __('Date input exceeded the expected date', 'builders-plugin');
+
+            case 'date_before':
+                return __('Date input must not be before the current date', 'builders-plugin');
 
             case 'closed':
                 return __('Registering new users is currently not allowed.', 'builders-plugin');
@@ -261,7 +201,7 @@ class Registration
     /**
      * Validates against a defined correct format
      */
-    public function validateDateFormat($date, $format = VALIDDATEFORMAT)
+    public function validateDateFormat($date, $format)
     {
         $d = DateTime::createFromFormat($format, $date);
         // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
@@ -291,11 +231,11 @@ class Registration
          */
         ob_start();
 
-        do_action('builders_plugin_customize_reg_before_' . $template_name);
+        do_action('' . PLUGIN_PREFIX . '_customize_reg_before_' . $template_name);
 
         require(BUILDERS_PLUGIN_DIR . 'frontend/html-templates/' . $template_name . '.php');
 
-        do_action('builders_plugin_customize_reg_after_' . $template_name);
+        do_action('' . PLUGIN_PREFIX . '_customize_reg_after_' . $template_name);
 
         $html = ob_get_contents();
         ob_end_clean();
@@ -323,7 +263,7 @@ class Registration
             'https://www.google.com/recaptcha/api/siteverify',
             array(
                 'body' => array(
-                    'secret' => get_option('builders_plugin_recaptcha_secret_key'),
+                    'secret' => get_option('' . PLUGIN_PREFIX . '_recaptcha_secret_key'),
                     'response' => $captcha_response
                 )
             )
@@ -387,8 +327,6 @@ class Registration
      */
     public function init()
     {
-        $this->register_user_metas();
-        add_action('graphql_register_types', array($this, 'register_user_metas_in_wpgraphql'));
     }
 }
-Registration::instance();
+Validation::instance();
