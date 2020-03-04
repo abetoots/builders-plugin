@@ -108,7 +108,7 @@ class Login
             return $redirect_url;
         }
         //Gym trainers and admins are redirected to dashboard
-        if (user_can($user, 'list_gym_members')) {
+        if (user_can($user, 'list_gym_member')) {
             if (user_can($user, 'manage_options')) {
                 $redirect_url = admin_url();
             } else {
