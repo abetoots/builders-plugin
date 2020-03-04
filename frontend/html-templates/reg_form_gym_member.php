@@ -1,4 +1,8 @@
-<?php if (!defined('ABSPATH')) exit; // Exit if accessed directly 
+<?php
+
+use const Builders_Plugin\Constants\ACTION_REGISTER_GYM_MEMBER;
+
+if (!defined('ABSPATH')) exit; // Exit if accessed directly 
 ?>
 
 <div id="RegForm" class="RegForm -gym_member">
@@ -13,17 +17,7 @@
     endif; ?>
 
     <?php if (isset($attributes['success'])) :
-        switch ($attributes['gender']) {
-            case 'male':
-                $message = 'It\'s lit! <span role="img">🔥</span>';
-                break;
-            case 'female':
-                $message = 'That\'s one step closer to making your body the sexiest outfit you own. <span role="img">💖</span>';
-                break;
-            default:
-                $message = 'Let\'s get sweatin\' <span role="img">💪</span> ';
-                break;
-        }
+        $message = 'Let\'s get sweatin\' <span role="img">💪</span> ';
     ?>
         <div class="RegForm__notification -success">
             <h2><?php _e("Registration successful!", 'builders-plugin'); ?> <span role="img">✅</span> </h2>
@@ -41,7 +35,7 @@
     <?php $nonce = wp_create_nonce('gym_member_reg_form_nonce'); ?>
     <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" autocomplete="off">
 
-        <input type="hidden" name="action" value="builders_do_action_register_gym_member">
+        <input type="hidden" name="action" value="<?php echo ACTION_REGISTER_GYM_MEMBER ?>">
         <input type="hidden" name="register_gym_member_nonce" value="<?php echo $nonce ?>" />
         <div class="RegForm__slot -fullname">
             <div class="Input">
