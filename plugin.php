@@ -2,6 +2,10 @@
 
 namespace Builders_Plugin;
 
+use const Builders_Plugin\Constants\GYM_ADMIN;
+use const Builders_Plugin\Constants\GYM_MEMBER;
+use const Builders_Plugin\Constants\GYM_TRAINER;
+
 /**
  * Class Plugin
  *
@@ -19,13 +23,14 @@ class Plugin
      */
     private function include_class_files()
     {
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/constants.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/member-registration.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/javascript-app.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/login.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/logout.php');
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/api.php');
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/react.php');
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/registration.php');
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/utilities.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/graphql.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/utilities.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/validation.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/acf.php');
         require_once(BUILDERS_PLUGIN_DIR . 'admin/settings.php');
     }
@@ -39,22 +44,22 @@ class Plugin
     public function define_initial_roles()
     {
         //Avoid nasty bugs
-        if (get_role('gym_member')) {
-            remove_role('gym_member');
+        if (get_role(GYM_MEMBER)) {
+            remove_role(GYM_MEMBER);
         }
-        add_role('gym_member', 'Gym Member', array(
+        add_role(GYM_MEMBER, 'Gym Member', array(
             'read'      => true
         ));
-        if (get_role('gym_trainer')) {
-            remove_role('gym_trainer');
+        if (get_role(GYM_TRAINER)) {
+            remove_role(GYM_TRAINER);
         }
-        add_role('gym_trainer', 'Gym Trainer', array(
+        add_role(GYM_TRAINER, 'Gym Trainer', array(
             'read'      => true
         ));
-        if (get_role('gym_admin')) {
-            remove_role('gym_admin');
+        if (get_role(GYM_ADMIN)) {
+            remove_role(GYM_ADMIN);
         }
-        add_role('gym_admin', 'Gym Admin', array(
+        add_role(GYM_ADMIN, 'Gym Admin', array(
             'read'      => true
         ));
     }
@@ -71,26 +76,38 @@ class Plugin
      */
     public function add_custom_caps()
     {
-        $trainer = get_role('gym_trainer');
+        $trainer = get_role(GYM_TRAINER);
         $trainer_caps = [
-            'list_gym_members'
+            'list_gym_member',
+            'create_gym_member',
         ];
         foreach ($trainer_caps as $c) {
             $trainer->add_cap($c);
         };
 
-        $trainer = get_role('administrator');
-        $trainer_caps = [
-            'list_gym_members'
+
+        $gymAdmin = get_role(GYM_ADMIN);
+        $gym_admin_caps = [
+            'list_gym_member',
+            'create_gym_member',
+            'create_gym_trainer',
+            'update_gym_member'
         ];
-        foreach ($trainer_caps as $c) {
-            $trainer->add_cap($c);
+        foreach ($gym_admin_caps as $c) {
+            $gymAdmin->add_cap($c);
         };
 
-        //         $admin = get_role('gym_admin');
-        // $admin_caps = [
-
-        // ];
+        $admin = get_role('administrator');
+        $admin_caps = [
+            'list_gym_member',
+            'create_gym_member',
+            'create_gym_trainer',
+            'create_gym_user',
+            'update_gym_member'
+        ];
+        foreach ($admin_caps as $c) {
+            $admin->add_cap($c);
+        };
     }
 
     /**
@@ -112,7 +129,7 @@ class Plugin
      */
     public static function enable_dev_scripts()
     {
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/dev-scripts.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/dev-scripts.php');
     }
 
     /**
@@ -148,12 +165,21 @@ class Plugin
     /**
      *  Plugin class constructor
      *
-     * Register plugin action hooks and filters
-     *
      * @since 1.0.0
      * @access public
      */
     public function __construct()
+    {
+        $this->init();
+    }
+
+    /**
+     *  Init function that handles all hooks and filters
+     * 
+     * @since 1.0.0
+     * @access public
+     */
+    public function init()
     {
         $this->include_class_files();
         $this->include_libraries();
@@ -167,4 +193,4 @@ class Plugin
 // Instantiate Plugin Class
 Plugin::instance();
 //Dev only
-// Plugin::enable_dev_scripts();
+Plugin::enable_dev_scripts();
