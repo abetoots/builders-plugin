@@ -2,6 +2,8 @@
 
 namespace Builders_Plugin\Admin\Settings;
 
+use const Builders_Plugin\Constants\PLUGIN_PREFIX;
+
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -16,7 +18,7 @@ function add_admin_menu_pages()
         'Builders Plugin Settings',
         'Builders Plugin Settings  <span class="dashicons dashicons-admin-generic"></span>',
         is_admin(),
-        'builders_plugin_do_settings_section',
+        '' . PLUGIN_PREFIX . '_do_settings_section',
         __NAMESPACE__ . '\generate_page'
     );
 
@@ -35,13 +37,13 @@ function init_custom_settings()
         'builders-plugin-features-section',
         'Toggle Features',
         __NAMESPACE__ . '\render_features_section',
-        'builders_plugin_do_settings_section'
+        '' . PLUGIN_PREFIX . '_do_settings_section'
     );
     add_settings_section(
         'builders-plugin-recaptcha-section',
         'reCAPTCHA Settings ',
         __NAMESPACE__ . '\render_recaptcha_section',
-        'builders_plugin_do_settings_section'
+        '' . PLUGIN_PREFIX . '_do_settings_section'
     );
 
     //Toggle if new members can register, bypasses users_can_register by WordPress core
@@ -49,7 +51,7 @@ function init_custom_settings()
         'builders-plugin-allow-portal-registration',
         'New users can register?',
         __NAMESPACE__ . '\render_registration_toggle',
-        'builders_plugin_do_settings_section',
+        '' . PLUGIN_PREFIX . '_do_settings_section',
         'builders-plugin-features-section'
     );
 
@@ -58,14 +60,14 @@ function init_custom_settings()
         'builders-plugin-recaptcha-site-key',
         'reCAPTCHA site key ',
         __NAMESPACE__ . '\render_recaptcha_site_key',
-        'builders_plugin_do_settings_section',
+        '' . PLUGIN_PREFIX . '_do_settings_section',
         'builders-plugin-recaptcha-section'
     );
     add_settings_field(
         'builders-plugin-recaptcha-secret-key',
         'reCAPTCHA secret key ',
         __NAMESPACE__ . '\render_recaptcha_secret_key',
-        'builders_plugin_do_settings_section',
+        '' . PLUGIN_PREFIX . '_do_settings_section',
         'builders-plugin-recaptcha-section'
     );
 
@@ -73,8 +75,8 @@ function init_custom_settings()
     register_setting('builders-plugin-settings', 'allow_portal_registration');
 
     //reCaptcha
-    register_setting('builders-plugin-settings', 'builders_plugin_recaptcha_site_key');
-    register_setting('builders-plugin-settings', 'builders_plugin_recaptcha_secret_key');
+    register_setting('builders-plugin-settings', '' . PLUGIN_PREFIX . '_recaptcha_site_key');
+    register_setting('builders-plugin-settings', '' . PLUGIN_PREFIX . '_recaptcha_secret_key');
 }
 //Features Section
 function render_features_section()
@@ -102,14 +104,14 @@ function render_recaptcha_section()
 
 function render_recaptcha_site_key()
 {
-    $siteKey = esc_attr(get_option('builders_plugin_recaptcha_site_key'));
-    echo '<input type="text" name="builders_plugin_recaptcha_site_key" value="' . $siteKey . '">';
+    $siteKey = esc_attr(get_option('' . PLUGIN_PREFIX . '_recaptcha_site_key'));
+    echo '<input type="text" name="' . PLUGIN_PREFIX . '_recaptcha_site_key" value="' . $siteKey . '">';
 }
 
 function render_recaptcha_secret_key()
 {
-    $secretKey = esc_attr(get_option('builders_plugin_recaptcha_secret_key'));
-    echo '<input type="text" name="builders_plugin_recaptcha_secret_key" value="' . $secretKey . '">';
+    $secretKey = esc_attr(get_option('' . PLUGIN_PREFIX . '_recaptcha_secret_key'));
+    echo '<input type="text" name="' . PLUGIN_PREFIX . '_recaptcha_secret_key" value="' . $secretKey . '">';
 }
 
 /**
