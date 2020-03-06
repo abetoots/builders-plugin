@@ -129,6 +129,12 @@ final class Builders_Plugin
             return;
         }
 
+        //Check if WPGrapihQl is installed and activated
+        if (!in_array('wp-graphql-jwt-authentication/wp-graphql-jwt-authentication.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+            add_action('admin_notices', array($this, 'admin_notice_required_wp_graphql_jwt_authentication'));
+            return;
+        }
+
         // Once we get here, We have passed all validation checks so we can safely include our plugin
         require_once('plugin.php');
     }
@@ -161,7 +167,7 @@ final class Builders_Plugin
     /**
      * Admin notice - WPGraphQL
      *
-     * Warning when the site doesn't WPGraphQL installed and activated
+     * Warning when the site doesn't have WPGraphQL installed and activated
      *
      * @since 1.0.0
      * @access public
@@ -187,7 +193,7 @@ final class Builders_Plugin
     /**
      * Admin notice - WPGrapihQL
      *
-     * Warning when the site doesn't WPGraphiQL installed and activated
+     * Warning when the site doesn't have WPGraphiQL installed and activated
      *
      * @since 1.0.0
      * @access public
@@ -205,6 +211,31 @@ final class Builders_Plugin
             '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
             self::MINIMUM_WPGRAPHIQL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
+        );
+
+        printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+    }
+
+    /**
+     * Admin notice - WPGraphQL JWT Authentication
+     *
+     * Warning when the site doesn't have WPGraphQL JWT Authentication installed and activated
+     *
+     * @since 1.0.3
+     * @access public
+     */
+    public function admin_notice_required_wp_graphql_jwt_authentication()
+    {
+        if (isset($_GET['activate'])) {
+            unset($_GET['activate']);
+        }
+
+        $message = sprintf(
+            /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
+            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
+            '<a href="https://github.com/wp-graphql/wp-graphql-jwt-authentication">Go to plugin</a>'
         );
 
         printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
