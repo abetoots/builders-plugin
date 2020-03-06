@@ -59,7 +59,7 @@ class Validation
 
         //'username' must always be set. 'email' and 'password' can be optional so check only if it is set
         if (empty($data['username']) || isset($data['email']) && empty($data['email']) || isset($data['password']) && empty($data['password'])) {
-            $errors = 'empty_field';
+            $errors[] = 'empty_field';
         }
 
         //make sure the length of 'username' is not less than 4
@@ -136,66 +136,66 @@ class Validation
         switch ($error_code) {
                 //Registration Error Codes
             case 'username_length':
-                return __('Full name is "too short"- that\'s what she said', 'builders-plugin');
+                return __('Full name is "too short"- that\'s what she said', PLUGIN_PREFIX);
 
             case 'username_exists':
-                return __('Username already exists', 'builders-plugin');
+                return __('Username already exists', PLUGIN_PREFIX);
 
             case 'invalid_username_register':
                 return __(
                     'Somehow that username is invalid. Maybe use a different one?',
-                    'builders-plugin'
+                    PLUGIN_PREFIX
                 );
 
             case 'password_length':
-                return __('Password is too short- that\'s what she said', 'builders-plugin');
+                return __('Password is too short- that\'s what she said', PLUGIN_PREFIX);
 
             case 'email':
-                return __('The email address you entered is not valid.', 'builders-plugin');
+                return __('The email address you entered is not valid.', PLUGIN_PREFIX);
 
             case 'email_exists':
-                return __('An account exists with this email address.', 'builders-plugin');
+                return __('An account exists with this email address.', PLUGIN_PREFIX);
 
             case 'date_format':
-                return __('Date format invalid', 'builders-plugin');
+                return __('Date format invalid', PLUGIN_PREFIX);
 
             case 'date_exceed':
-                return __('Date input exceeded the expected date', 'builders-plugin');
+                return __('Date input exceeded the expected date', PLUGIN_PREFIX);
 
             case 'date_before':
-                return __('Date input must not be before the current date', 'builders-plugin');
+                return __('Date input must not be before the current date', PLUGIN_PREFIX);
 
             case 'closed':
-                return __('Registering new users is currently not allowed.', 'builders-plugin');
+                return __('Registering new users is currently not allowed.', PLUGIN_PREFIX);
             case 'disabled':
-                return __('Registration is currently not allowed.', 'builders-plugin');
+                return __('Registration is currently not allowed.', PLUGIN_PREFIX);
             case 'captcha':
-                return __('The Google reCAPTCHA check failed. Are you a robot?', 'builders-plugin');
+                return __('The Google reCAPTCHA check failed. Are you a robot?', PLUGIN_PREFIX);
 
 
                 //Login Error Codes
             case 'invalid_username':
                 return __(
                     "Invalid username/email",
-                    'builders-plugin'
+                    PLUGIN_PREFIX
                 );
 
             case 'incorrect_password':
                 $err = __(
                     "The password you entered wasn't quite right. <a href='%s'>Did you forget your password</a>?",
-                    'builders-plugin'
+                    PLUGIN_PREFIX
                 );
                 return sprintf($err, wp_lostpassword_url());
 
                 //Neutral Error Codes
             case 'empty_field':
-                return __('You forgot some fields though', 'builders-plugin');
+                return __('You forgot some fields though. Also, username must be always defined', PLUGIN_PREFIX);
 
             default:
                 break;
         }
 
-        return __('An unknown error occurred. Please try again later.', 'builders-plugin');
+        return __('An unknown error occurred. Please try again later.', PLUGIN_PREFIX);
     }
 
     /**
