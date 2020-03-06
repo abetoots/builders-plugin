@@ -2,10 +2,8 @@
 
 namespace Builders_Plugin\Inc\Core\Utilities;
 
-use Builders_Plugin\Inc\Helpers\Validation as RegistrationHelper;
 use Builders_Plugin\Inc\Helpers\Validation;
 use DateTime;
-use WP_Error;
 
 use const Builders_Plugin\Constants\BRANCH;
 use const Builders_Plugin\Constants\FULL_NAME;
@@ -145,16 +143,6 @@ function validate_gym_user_data_shared($errors, $data)
     if (isset($data[FULL_NAME]) && username_exists(sanitize_key($data[FULL_NAME]))) {
         $errors[] = 'username_exists';
     }
-
-    //Validate date against a defined format 
-    if (isset($data[MEMBERSHIP_DURATION]) && !RegistrationHelper::instance()->validateDateFormat($data[MEMBERSHIP_DURATION], VALIDDATEFORMAT)) {
-        $errors[] = 'date_format';
-    }
-
-    // Date should not be before current date
-    if (isset($data[MEMBERSHIP_DURATION]) && $data[MEMBERSHIP_DURATION] < date(VALIDDATEFORMAT)) {
-        $errors[] = 'date_before';
-    }
 }
 
 
@@ -195,10 +183,11 @@ function sanitizeGymData($key, $val, $userId = '')
         case BRANCH:
             return sanitize_text_field($val);
         case MEMBERSHIP_DURATION:
+            //dateToUpdate must be a DateTime obj
+            //must return a string in a valid format
             $dateToUpdate = new DateTime('now');
             if (!empty($userId) && user_id_exists($userId)) {
-                $dateFromDB = date(VALIDDATEFORMAT, get_user_meta($userId, MEMBERSHIP_DURATION, true));
-                $dateToUpdate = DateTime::createFromFormat(VALIDDATEFORMAT, $dateFromDB);
+                $dateToUpdate = DateTime::createFromFormat(VALIDDATEFORMAT, get_user_meta($userId, MEMBERSHIP_DURATION, true));
             }
             switch ($val) {
                 case THIRTY_DAYS:
@@ -214,7 +203,7 @@ function sanitizeGymData($key, $val, $userId = '')
                     if ($dateVal > $dateToUpdate) {
                         return $dateVal->format(VALIDDATEFORMAT);
                     } else {
-                        return new WP_Error('date_format', Validation::instance()->get_error_message('date_format'));
+                        throw new \RuntimeException(Validation::instance()->get_error_message('date_format'), 'date_format');
                     }
             }
     }
