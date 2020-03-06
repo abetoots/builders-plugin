@@ -4,6 +4,8 @@ namespace Builders_Plugin;
 
 use WP_Query;
 
+use const Builders_Plugin\Constants\PLUGIN_PREFIX;
+
 /**
  * Plugin Name: Builders Plugin
  * Plugin URI:  https://example.com/plugins/the-basics/
@@ -58,7 +60,7 @@ final class Builders_Plugin
      * @since 1.0.3
      * @var string Minimum ACF version required to run the plugin.
      */
-    const MINIMUM_WPGRAPHQL_VERSION = '0.6.1';
+    const WORKING_WPGRAPHQL_VERSION = '0.6.1';
 
     /**
      * Minimum WPGraphiQl Version
@@ -66,7 +68,7 @@ final class Builders_Plugin
      * @since 1.0.3
      * @var string Minimum ACF version required to run the plugin.
      */
-    const MINIMUM_WPGRAPHI_QL_VERSION = '1.0.1';
+    const WORKING_WPGRAPHI_QL_VERSION = '1.0.1';
 
     /**
      * Constructor
@@ -94,7 +96,7 @@ final class Builders_Plugin
      */
     public function i18n()
     {
-        load_plugin_textdomain('builders-plugin');
+        load_plugin_textdomain(PLUGIN_PREFIX);
     }
 
     /**
@@ -118,13 +120,13 @@ final class Builders_Plugin
         }
 
         //Check if WPGraphQl is installed and activated
-        if (!in_array('wp-graphql-' . self::MINIMUM_WPGRAPHQL_VERSION . '/wp-graphql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        if (!in_array('wp-graphql-' . self::WORKING_WPGRAPHQL_VERSION . '/wp-graphql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
             add_action('admin_notices', array($this, 'admin_notice_required_wp_graphql'));
             return;
         }
 
         //Check if WPGrapihQl is installed and activated
-        if (!in_array('wp-graphiql-' . self::MINIMUM_WPGRAPHI_QL_VERSION . '/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        if (!in_array('wp-graphiql-' . self::WORKING_WPGRAPHI_QL_VERSION . '/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
             add_action('admin_notices', array($this, 'admin_notice_required_wp_graphi_ql'));
             return;
         }
@@ -155,9 +157,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" version %3$s or greater.', 'builders-plugin'),
-            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
-            '<strong>' . esc_html__('PHP', 'builders-plugin') . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" version %3$s.', PLUGIN_PREFIX),
+            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
+            '<strong>' . esc_html__('PHP', PLUGIN_PREFIX) . '</strong>',
             self::MINIMUM_PHP_VERSION
         );
 
@@ -180,10 +182,10 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: WPGraphQL PHP 3: WPGraphQL url */
-            esc_html__('"%1$s" requires "%2$s" version %3$s or greater. "%4$s"', 'builders-plugin'),
-            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
-            '<strong>' . esc_html__('WPGraphQL', 'builders-plugin') . '</strong>',
-            self::MINIMUM_WPGRAPHQL_VERSION,
+            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', PLUGIN_PREFIX),
+            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
+            '<strong>' . esc_html__('WPGraphQL', PLUGIN_PREFIX) . '</strong>',
+            self::WORKING_WPGRAPHQL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphql/releases">Go to plugin</a>'
         );
 
@@ -206,10 +208,10 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" version %3$s or greater. "%4$s"', 'builders-plugin'),
-            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
-            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
-            self::MINIMUM_WPGRAPHI_QL_VERSION,
+            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', PLUGIN_PREFIX),
+            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', PLUGIN_PREFIX) . '</strong>',
+            self::WORKING_WPGRAPHI_QL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
         );
 
@@ -232,9 +234,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
-            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
-            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', PLUGIN_PREFIX),
+            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', PLUGIN_PREFIX) . '</strong>',
             '<a href="https://github.com/wp-graphql/wp-graphql-jwt-authentication">Go to plugin</a>'
         );
 
@@ -250,17 +252,17 @@ function rewrite_flush_on_activation()
     // Information needed for creating the plugin's pages
     $page_definitions = array(
         'dashboard'      => array(
-            'title'     => __('Dashboard', 'builders-plugin'),
+            'title'     => __('Dashboard', PLUGIN_PREFIX),
             'content'   => '',
             'template'  => 'react-app.php'
         ),
         'sign-in' => array(
-            'title' => __('Sign In', 'builders-plugin'),
+            'title' => __('Sign In', PLUGIN_PREFIX),
             'content'   => '',
             'template'  => ''
         ),
         'registration'  => array(
-            'title' => __('Register', 'builders-plugin'),
+            'title' => __('Register', PLUGIN_PREFIX),
             'content'   => '',
             'template'  => ''
         )
@@ -307,7 +309,7 @@ function insert_pages($page_definitions)
                     'ping_status'    => 'closed',
                     'comment_status' => 'closed',
                     'meta_input'     => array(
-                        'inserted'   => 'builders-plugin' //used for adding post states in utilities.php
+                        'inserted'   => PLUGIN_PREFIX //used for adding post states in utilities.php
                     )
                 )
             );
@@ -335,7 +337,7 @@ function insert_pages($page_definitions)
                         'ping_status'    => 'closed',
                         'comment_status' => 'closed',
                         'meta_input'     => array(
-                            'inserted'   => 'builders-plugin' // used for adding post states in utilities.php
+                            'inserted'   => PLUGIN_PREFIX // used for adding post states in utilities.php
                         )
                     )
                 );
