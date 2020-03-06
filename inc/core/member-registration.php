@@ -202,7 +202,7 @@ class Member_Registration
     public function register_user_metas_in_wpgraphql()
     {
         foreach (self::$metas as $key => $val) {
-            register_graphql_field($val['obj_type'], $key, array(
+            \register_graphql_field($val['obj_type'], $key, array(
                 //The schema only has 'Int' type, everything else convert to uppercase
                 'type' => $val['type'] === 'number' ? 'Int' : strtoupper($val['type']),
                 'resolve' => function ($obj, $dunno, $app_context, $resolve_info) {
