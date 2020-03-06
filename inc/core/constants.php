@@ -14,6 +14,7 @@ const GYM_ADMIN = "gym_admin";
  */
 const JWT_AUTH_EXPIRATION = "jwtAuthExpiration";
 const REFRESH_TOKEN = "refreshToken";
+const AUTH_TOKEN = "authToken";
 const FULL_NAME = "full_name";
 const MEMBERSHIP_DURATION = "membership_duration";
 const IS_STUDENT = "is_student";
@@ -27,8 +28,6 @@ const GYM_MEMBER_FIELDS = "full_name
                             branch
                             userId
                             ";
-
-
 
 const THIRTY_DAYS = '30 days';
 const NINETY_DAYS = '90 days';
