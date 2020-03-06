@@ -1,12 +1,8 @@
 <?php
-
+//TODO comments
 namespace Builders_Plugin\Inc\Core\GraphQl;
 
 use Builders_Plugin\Inc\Helpers\Validation as ValidationHelper;
-
-use WP_Error;
-use WPGraphQL;
-
 use function Builders_Plugin\Inc\Core\Utilities\sanitizeGymData;
 
 use const Builders_Plugin\Constants\BRANCH;
@@ -29,52 +25,13 @@ if (!defined('ABSPATH')) exit; //Exit if accessed directly
 
 function get_gym_member_graphql($id)
 {
-    return graphql([
+    return \graphql([
         'query' => ' {
                         user(id: "' . $id . '", idType: DATABASE_ID) 
                         {
                             ' . GYM_MEMBER_FIELDS . '
                         }
                     }'
-    ]);
-}
-
-add_action('graphql_register_types', __NAMESPACE__ . '\register_new_types');
-function register_new_types()
-{
-    //Gym roles enum
-    register_graphql_enum_type('GymRolesEnum', [
-        'description' => __('List of available gym roles', PLUGIN_PREFIX),
-        'values' => [
-            'GYM_MEMBER' => [
-                'value' => GYM_MEMBER
-            ],
-            'GYM_TRAINER' => [
-                'value' => GYM_TRAINER
-            ],
-            'GYM_ADMIN' => [
-                'value' => GYM_ADMIN
-            ],
-        ],
-    ]);
-
-    //Membership duration preset
-    register_graphql_enum_type('MembershipDurationPresetsEnum', [
-        'description' => __('Membership duration presets. Will be added to current date', PLUGIN_PREFIX),
-        'values' => [
-            'THIRTY_DAYS' => [
-                'value' => THIRTY_DAYS
-            ],
-            'NINETY_DAYS' => [
-                'value' => NINETY_DAYS
-            ],
-            'HALF_YEAR' => [
-                'value' => HALF_YEAR
-            ],
-            'ONE_YEAR' => [
-                'value' => ONE_YEAR
-            ]
-        ],
     ]);
 }
 
@@ -87,7 +44,7 @@ function register_custom_mutations()
     # The first argument, in this case `exampleMutation`, is the name of the mutation in the Schema
     # The second argument is an array to configure the mutation.
     # The config array accepts 3 key/value pairs for: inputFields, outputFields and mutateAndGetPayload.
-    register_graphql_mutation('updateGymUser', [
+    \register_graphql_mutation('updateGymUser', [
 
         # inputFields expects an array of Fields to be used for inputtting values to the mutation
         'inputFields' => [
@@ -123,14 +80,14 @@ function register_custom_mutations()
         # the function should return enough info for the outputFields to resolve with
         'mutateAndGetPayload' => function ($input, $context, $info) {
             if (!is_user_logged_in()) {
-                return new WP_Error('403', 'Unauthenticated');
+                throw new \RuntimeException('Unauthenticated user', 403);
             }
             // Do any logic here to sanitize the input, check user capabilities, etc
             if (!current_user_can('update_gym_member')) {
-                return new WP_Error('403', 'Forbidden capabilities');
+                throw new \RuntimeException('Forbidden capabilities', 403);
             }
             if (empty($input['userId'])) {
-                return new WP_Error('403', 'Required inputs are empty');
+                throw new \RuntimeException('Required inputs are empty', 403);
             }
 
             //to be returned
@@ -149,7 +106,9 @@ function register_custom_mutations()
 
             $result = ValidationHelper::instance()->validate_and_update_user($data);
             if (is_wp_error($result)) {
-                return $result;
+                foreach ($result->get_error_codes() as $error_code) {
+                    throw new \RuntimeException($result->get_error_message($error_code));
+                }
             }
             //if validation is successful, we'll reach below
             //we get the same $data we passed in so we're sure we only update metas that are not empty
@@ -169,7 +128,7 @@ function register_custom_mutations()
     # The first argument, in this case `exampleMutation`, is the name of the mutation in the Schema
     # The second argument is an array to configure the mutation.
     # The config array accepts 3 key/value pairs for: inputFields, outputFields and mutateAndGetPayload.
-    register_graphql_mutation('createGymUser', [
+    \register_graphql_mutation('createGymUser', [
 
         # inputFields expects an array of Fields to be used for inputtting values to the mutation
         'inputFields' => [
@@ -178,7 +137,7 @@ function register_custom_mutations()
                 'description'   => __('Full name of the gym user to be registered', PLUGIN_PREFIX)
             ],
             MEMBERSHIP_DURATION . '_preset' => [
-                'type'          => 'MembershipDurationPresetsEnum',
+                'type'          => 'String',
                 'description'   => __('Set the membership duration from preset values to be added to current date.', PLUGIN_PREFIX)
             ],
             MEMBERSHIP_DURATION . '_specific' => [
@@ -222,6 +181,14 @@ function register_custom_mutations()
             GYM_ROLE              => [
                 'type'          => 'String',
                 'description'   => __('Gym user\'s role', PLUGIN_PREFIX)
+            ],
+            'userId'              => [
+                'type'          => 'Int',
+                'description'   => __('The gym user\'s database ID', PLUGIN_PREFIX)
+            ],
+            'id'                => [
+                'type'          => 'ID',
+                'description'   => __('A unique identifier', PLUGIN_PREFIX)
             ]
         ],
 
@@ -230,20 +197,28 @@ function register_custom_mutations()
         'mutateAndGetPayload' => function ($input, $context, $info) {
             // Do any logic here to sanitize the input, check user capabilities, etc
             if (!is_user_logged_in()) {
-                return new WP_Error('403', 'Unauthenticated');
+                throw new \RuntimeException('Unauthenticated user', 403);
             }
             if (empty($input[GYM_ROLE])) {
-                return new WP_Error('403', 'Required inputs are empty');
+                throw new \RuntimeException('Required inputs are empty', 403);
+            }
+
+            if ($input[GYM_ROLE] !== GYM_MEMBER && $input[GYM_ROLE] !== GYM_TRAINER && $input[GYM_ROLE] !== GYM_ADMIN) {
+                throw new \RuntimeException('Forbidden gym roles. Try ' . GYM_MEMBER . ', ' . GYM_TRAINER . ' , ' . GYM_ADMIN . ' ', 403);
+            }
+
+            if ($input[MEMBERSHIP_DURATION . '_preset'] !== THIRTY_DAYS && MEMBERSHIP_DURATION . '_preset' !== HALF_YEAR && MEMBERSHIP_DURATION . '_preset' !== NINETY_DAYS && MEMBERSHIP_DURATION . '_preset' !== ONE_YEAR) {
+                throw new \RuntimeException('Forbidden membership duration. Try ' . THIRTY_DAYS . ', ' . NINETY_DAYS . ', ' . HALF_YEAR . ', ' . ONE_YEAR . ' ', 403);
             }
 
             if ($input[GYM_ROLE] === GYM_MEMBER && !current_user_can('create_' . GYM_MEMBER . '')) {
-                return new WP_Error('403', 'Forbidden capabilities');
+                throw new \RuntimeException('Forbidden capabilities', 403);
             }
             if ($input[GYM_ROLE] === GYM_TRAINER && !current_user_can('create_' . GYM_TRAINER . '')) {
-                return new WP_Error('403', 'Forbidden capabilities');
+                throw new \RuntimeException('Forbidden capabilities', 403);
             }
             if ($input[GYM_ROLE] === GYM_ADMIN && !current_user_can('create_gym_user')) {
-                return new WP_Error('403', 'Forbidden capabilities');
+                throw new \RuntimeException('Forbidden capabilities', 403);
             }
 
             //to be returned
@@ -251,24 +226,41 @@ function register_custom_mutations()
             //for validation
             $data = [];
             $data['userId'] = $input['userId'];
+            $data['username'] = $input[FULL_NAME];
             foreach ($input as $key => $val) {
-                //for each editable field that is defined in our $input, we want to validate it
+
                 if (!empty($input[$key])) {
+
+                    //handle 'membership_duration_preset' and 'membership_duration_specific' cases
+                    //by our control flow below, 'membership_duration_specific' will always have priority if it is set
+                    if ($key === MEMBERSHIP_DURATION . '_preset' && !empty($val)) {
+                        $data[MEMBERSHIP_DURATION] = $val;
+                        continue;
+                    }
+
+                    if ($key === MEMBERSHIP_DURATION . '_specific' && !empty($val)) {
+                        $data[MEMBERSHIP_DURATION] = $val;
+                        continue;
+                    }
                     //we then build a $data associative array ... 
                     //... so we can pass it through the same validation as registering a user
-                    $data[$key] = $input[$key];
+                    $data[$key] = $val;
                 }
             }
 
             $result = ValidationHelper::instance()->validate_and_register_new_user($data, $input[GYM_ROLE]);
             if (is_wp_error($result)) {
-                return $result;
+                foreach ($result->get_error_codes() as $error_code) {
+                    throw new \Error($result->get_error_message($error_code), 403);
+                }
             }
 
             //if validation is successful, we'll reach below
             foreach ($data as $key => $val) {
                 $output[$key] = $val;
             }
+
+            $output['userId'] = $result;
 
             return $output;
         }
