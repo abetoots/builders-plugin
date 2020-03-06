@@ -8,7 +8,7 @@ use WP_Query;
  * Plugin Name: Builders Plugin
  * Plugin URI:  https://example.com/plugins/the-basics/
  * Description: Plugin necessary for Builder's membership portal.
- * Version:     1.0.2
+ * Version:     1.0.3
  * Author:      Abe Suni M. Caymo
  * Author URI:  https://abecaymo.com
  * License:     GPL2
@@ -51,6 +51,22 @@ final class Builders_Plugin
      * @var string Minimum ACF version required to run the plugin.
      */
     const MINIMUM_ACF_VERSION = '5.2.8';
+
+    /**
+     * Minimum WPGraphQl Version
+     *
+     * @since 1.0.3
+     * @var string Minimum ACF version required to run the plugin.
+     */
+    const MINIMUM_WPGRAPHQL_VERSION = '0.7.0';
+
+    /**
+     * Minimum WPGraphQl Version
+     *
+     * @since 1.0.3
+     * @var string Minimum ACF version required to run the plugin.
+     */
+    const MINIMUM_WPGRAPHIQL_VERSION = '1.0.1';
 
     /**
      * Constructor
@@ -102,13 +118,13 @@ final class Builders_Plugin
         }
 
         //Check if WPGraphQl is installed and activated
-        if (!in_array('wp-graphql/wp-graphql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        if (!in_array('wp-graphql-' . self::MINIMUM_WPGRAPHQL_VERSION . '/wp-graphql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
             add_action('admin_notices', array($this, 'admin_notice_required_wp_graphql'));
             return;
         }
 
         //Check if WPGrapihQl is installed and activated
-        if (!in_array('wp-graphiql/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        if (!in_array('wp-graphiql-' . self::MINIMUM_WPGRAPHQL_VERSION . '/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
             add_action('admin_notices', array($this, 'admin_notice_required_wp_grapihql'));
             return;
         }
@@ -158,9 +174,10 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: WPGraphQL PHP 3: WPGraphQL url */
-            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            esc_html__('"%1$s" requires "%2$s" version %3$s or greater. "%4$s"', 'builders-plugin'),
             '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
             '<strong>' . esc_html__('WPGraphQL', 'builders-plugin') . '</strong>',
+            self::MINIMUM_WPGRAPHQL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphql/releases">Go to plugin</a>'
         );
 
@@ -183,9 +200,10 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            esc_html__('"%1$s" requires "%2$s" version %3$s or greater. "%4$s"', 'builders-plugin'),
             '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
             '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
+            self::MINIMUM_WPGRAPHIQL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
         );
 
