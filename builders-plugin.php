@@ -4,8 +4,6 @@ namespace Builders_Plugin;
 
 use WP_Query;
 
-use const Builders_Plugin\Constants\PLUGIN_PREFIX;
-
 /**
  * Plugin Name: Builders Plugin
  * Plugin URI:  https://example.com/plugins/the-basics/
@@ -96,7 +94,7 @@ final class Builders_Plugin
      */
     public function i18n()
     {
-        load_plugin_textdomain(PLUGIN_PREFIX);
+        load_plugin_textdomain('builders-plugin');
     }
 
     /**
@@ -157,9 +155,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" version %3$s.', PLUGIN_PREFIX),
-            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
-            '<strong>' . esc_html__('PHP', PLUGIN_PREFIX) . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" version %3$s.', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('PHP', 'builders-plugin') . '</strong>',
             self::MINIMUM_PHP_VERSION
         );
 
@@ -182,9 +180,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: WPGraphQL PHP 3: WPGraphQL url */
-            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', PLUGIN_PREFIX),
-            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
-            '<strong>' . esc_html__('WPGraphQL', PLUGIN_PREFIX) . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('WPGraphQL', 'builders-plugin') . '</strong>',
             self::WORKING_WPGRAPHQL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphql/releases">Go to plugin</a>'
         );
@@ -208,9 +206,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', PLUGIN_PREFIX),
-            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
-            '<strong>' . esc_html__('   WPGraphiQL', PLUGIN_PREFIX) . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" version %3$s. "%4$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
             self::WORKING_WPGRAPHI_QL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
         );
@@ -234,9 +232,9 @@ final class Builders_Plugin
 
         $message = sprintf(
             /* translators: 1: Plugin name 2: PHP 3: Required PHP version */
-            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', PLUGIN_PREFIX),
-            '<strong>' . esc_html__('Builders Plugin', PLUGIN_PREFIX) . '</strong>',
-            '<strong>' . esc_html__('   WPGraphiQL', PLUGIN_PREFIX) . '</strong>',
+            esc_html__('"%1$s" requires "%2$s" to be installed and activated. "%3$s"', 'builders-plugin'),
+            '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
+            '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
             '<a href="https://github.com/wp-graphql/wp-graphql-jwt-authentication">Go to plugin</a>'
         );
 
@@ -252,17 +250,17 @@ function rewrite_flush_on_activation()
     // Information needed for creating the plugin's pages
     $page_definitions = array(
         'dashboard'      => array(
-            'title'     => __('Dashboard', PLUGIN_PREFIX),
+            'title'     => __('Dashboard', 'builders-plugin'),
             'content'   => '',
             'template'  => 'react-app.php'
         ),
         'sign-in' => array(
-            'title' => __('Sign In', PLUGIN_PREFIX),
+            'title' => __('Sign In', 'builders-plugin'),
             'content'   => '',
             'template'  => ''
         ),
         'registration'  => array(
-            'title' => __('Register', PLUGIN_PREFIX),
+            'title' => __('Register', 'builders-plugin'),
             'content'   => '',
             'template'  => ''
         )
@@ -309,7 +307,7 @@ function insert_pages($page_definitions)
                     'ping_status'    => 'closed',
                     'comment_status' => 'closed',
                     'meta_input'     => array(
-                        'inserted'   => PLUGIN_PREFIX //used for adding post states in utilities.php
+                        'inserted'   => 'builders-plugin' //used for adding post states in utilities.php
                     )
                 )
             );
@@ -337,7 +335,7 @@ function insert_pages($page_definitions)
                         'ping_status'    => 'closed',
                         'comment_status' => 'closed',
                         'meta_input'     => array(
-                            'inserted'   => PLUGIN_PREFIX // used for adding post states in utilities.php
+                            'inserted'   => 'builders-plugin' // used for adding post states in utilities.php
                         )
                     )
                 );
