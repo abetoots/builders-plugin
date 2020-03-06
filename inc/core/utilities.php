@@ -198,12 +198,12 @@ function sanitizeGymData($key, $val, $userId = '')
                     return date_add($dateToUpdate, date_interval_create_from_date_string(HALF_YEAR))->format(VALIDDATEFORMAT);
                 case ONE_YEAR:
                     return date_add($dateToUpdate, date_interval_create_from_date_string(ONE_YEAR))->format(VALIDDATEFORMAT);
-                default: //$val is a date string in ISO format
+                default: //$val should be date string in ISO format
                     $dateVal = new DateTime($val);
-                    if ($dateVal > $dateToUpdate) {
+                    if ($dateVal > new DateTime('now')) {
                         return $dateVal->format(VALIDDATEFORMAT);
                     } else {
-                        throw new \RuntimeException(Validation::instance()->get_error_message('date_format'), 'date_format');
+                        throw new \RuntimeException(Validation::instance()->get_error_message('date_format'), 403);
                     }
             }
     }
