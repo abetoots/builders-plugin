@@ -1,8 +1,7 @@
 (function($) {
   $(document).ready(function() {
     /**
-     * TODO do not abstract away getting of token, instead make sure the app only loads
-     * TODO when logged in and w/ right capabilities on the SERVER SIDE
+     * TODO Replace with WP GraphQl authentication
      */
     const TOKEN = "/wp-json/simple-jwt-authentication/v1/token";
     const VALIDATE = "/wp-json/simple-jwt-authentication/v1/token/validate";
