@@ -60,7 +60,7 @@ final class Builders_Plugin
      * @since 1.0.3
      * @var string Minimum ACF version required to run the plugin.
      */
-    const WORKING_WPGRAPHQL_VERSION = '0.6.1';
+    const WORKING_WPGRAPHQL_VERSION = '0.7.0';
 
     /**
      * Minimum WPGraphiQl Version
