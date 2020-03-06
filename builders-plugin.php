@@ -58,15 +58,15 @@ final class Builders_Plugin
      * @since 1.0.3
      * @var string Minimum ACF version required to run the plugin.
      */
-    const MINIMUM_WPGRAPHQL_VERSION = '0.7.0';
+    const MINIMUM_WPGRAPHQL_VERSION = '0.6.1';
 
     /**
-     * Minimum WPGraphQl Version
+     * Minimum WPGraphiQl Version
      *
      * @since 1.0.3
      * @var string Minimum ACF version required to run the plugin.
      */
-    const MINIMUM_WPGRAPHIQL_VERSION = '1.0.1';
+    const MINIMUM_WPGRAPHI_QL_VERSION = '1.0.1';
 
     /**
      * Constructor
@@ -124,8 +124,8 @@ final class Builders_Plugin
         }
 
         //Check if WPGrapihQl is installed and activated
-        if (!in_array('wp-graphiql-' . self::MINIMUM_WPGRAPHQL_VERSION . '/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-            add_action('admin_notices', array($this, 'admin_notice_required_wp_grapihql'));
+        if (!in_array('wp-graphiql-' . self::MINIMUM_WPGRAPHI_QL_VERSION . '/wp-graphiql.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+            add_action('admin_notices', array($this, 'admin_notice_required_wp_graphi_ql'));
             return;
         }
 
@@ -198,7 +198,7 @@ final class Builders_Plugin
      * @since 1.0.0
      * @access public
      */
-    public function admin_notice_required_wp_graphiql()
+    public function admin_notice_required_wp_graphi_ql()
     {
         if (isset($_GET['activate'])) {
             unset($_GET['activate']);
@@ -209,7 +209,7 @@ final class Builders_Plugin
             esc_html__('"%1$s" requires "%2$s" version %3$s or greater. "%4$s"', 'builders-plugin'),
             '<strong>' . esc_html__('Builders Plugin', 'builders-plugin') . '</strong>',
             '<strong>' . esc_html__('   WPGraphiQL', 'builders-plugin') . '</strong>',
-            self::MINIMUM_WPGRAPHIQL_VERSION,
+            self::MINIMUM_WPGRAPHI_QL_VERSION,
             '<a href="https://github.com/wp-graphql/wp-graphiql">Go to plugin</a>'
         );
 
