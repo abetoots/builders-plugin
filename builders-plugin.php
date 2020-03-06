@@ -8,7 +8,7 @@ use WP_Query;
  * Plugin Name: Builders Plugin
  * Plugin URI:  https://example.com/plugins/the-basics/
  * Description: Plugin necessary for Builder's membership portal.
- * Version:     1.0.0
+ * Version:     1.0.2
  * Author:      Abe Suni M. Caymo
  * Author URI:  https://abecaymo.com
  * License:     GPL2
@@ -195,7 +195,6 @@ final class Builders_Plugin
 // Instantiate Builders Plugin
 new Builders_Plugin();
 
-register_activation_hook(__FILE__, __NAMESPACE__ . '\rewrite_flush_on_activation');
 function rewrite_flush_on_activation()
 {
 
