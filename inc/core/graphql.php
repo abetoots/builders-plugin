@@ -207,7 +207,7 @@ function register_custom_mutations()
                 throw new \RuntimeException('Forbidden gym roles. Try ' . GYM_MEMBER . ', ' . GYM_TRAINER . ' , ' . GYM_ADMIN . ' ', 403);
             }
 
-            if ($input[MEMBERSHIP_DURATION . '_preset'] !== THIRTY_DAYS && MEMBERSHIP_DURATION . '_preset' !== HALF_YEAR && MEMBERSHIP_DURATION . '_preset' !== NINETY_DAYS && MEMBERSHIP_DURATION . '_preset' !== ONE_YEAR) {
+            if (!empty($input[MEMBERSHIP_DURATION . '_preset']) && $input[MEMBERSHIP_DURATION . '_preset'] !== THIRTY_DAYS && MEMBERSHIP_DURATION . '_preset' !== HALF_YEAR && MEMBERSHIP_DURATION . '_preset' !== NINETY_DAYS && MEMBERSHIP_DURATION . '_preset' !== ONE_YEAR) {
                 throw new \RuntimeException('Forbidden membership duration. Try ' . THIRTY_DAYS . ', ' . NINETY_DAYS . ', ' . HALF_YEAR . ', ' . ONE_YEAR . ' ', 403);
             }
 
@@ -232,7 +232,8 @@ function register_custom_mutations()
                 if (!empty($input[$key])) {
 
                     //handle 'membership_duration_preset' and 'membership_duration_specific' cases
-                    //by our control flow below, 'membership_duration_specific' will always have priority if it is set
+                    //by our control flow below, 'membership_duration_specific' will always have priority
+                    //and override 'membership_duration_preset if it is set
                     if ($key === MEMBERSHIP_DURATION . '_preset' && !empty($val)) {
                         $data[MEMBERSHIP_DURATION] = $val;
                         continue;
