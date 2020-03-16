@@ -78,6 +78,7 @@ class Plugin
     {
         $trainer = get_role(GYM_TRAINER);
         $trainer_caps = [
+            'list_users',
             'list_gym_member',
             'create_gym_member',
         ];
@@ -88,6 +89,7 @@ class Plugin
 
         $gymAdmin = get_role(GYM_ADMIN);
         $gym_admin_caps = [
+            'list_users',
             'list_gym_member',
             'create_gym_member',
             'create_gym_trainer',
