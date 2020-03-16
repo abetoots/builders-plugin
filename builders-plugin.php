@@ -8,7 +8,7 @@ use WP_Query;
  * Plugin Name: Builders Plugin
  * Plugin URI:  https://example.com/plugins/the-basics/
  * Description: Plugin necessary for Builder's membership portal.
- * Version:     1.0.3
+ * Version:     1.0.4
  * Author:      Abe Suni M. Caymo
  * Author URI:  https://abecaymo.com
  * License:     GPL2
