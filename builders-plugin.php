@@ -20,7 +20,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 define('BUILDERS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BUILDERS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('BUILDERS_PLUGIN_APP_MANIFEST', plugin_dir_url(__FILE__) . '/build/asset-manifest.json');
 
 define('BUILDERS_ACF_DIR', plugin_dir_path(__FILE__) . '/libraries/advanced-custom-fields-pro/');
 define('BUILDERS_ACF_URL', plugin_dir_path(__FILE__) . 'libraries/advanced-custom-fields-pro/');
