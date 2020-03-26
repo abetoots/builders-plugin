@@ -25,7 +25,6 @@ class Plugin
     {
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/constants.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/member-registration.php');
-        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/javascript-app.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/login.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/logout.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/graphql.php');
