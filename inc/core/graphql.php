@@ -90,8 +90,6 @@ function register_custom_mutations()
                 throw new \RuntimeException('Required inputs are empty', 403);
             }
 
-            //to be returned
-            $output = [];
             //for validation
             $data = [];
             $data['userId'] = $input['userId'];
@@ -104,23 +102,16 @@ function register_custom_mutations()
                 }
             }
 
-            $result = ValidationHelper::instance()->validate_and_update_user($data);
+            //We expect the new data or a WP_Error
+            $result = ValidationHelper::instance()->validate_and_save_new_data_of_user($data, GYM_MEMBER);
             if (is_wp_error($result)) {
                 foreach ($result->get_error_codes() as $error_code) {
                     throw new \RuntimeException($result->get_error_message($error_code));
                 }
             }
-            //if validation is successful, we'll reach below
-            //we get the same $data we passed in so we're sure we only update metas that are not empty
-            foreach ($data as $key => $val) {
-                $safeData = sanitizeGymData($key, $val, $data['userId']);
-                $success = update_user_meta($data['userId'], $key, $safeData);
-                if ($success) {
-                    $output[$key] = $safeData;
-                }
-            }
 
-            return $output;
+            //if validation is successful, we'll reach below
+            return $result;
         }
     ]);
 
@@ -167,7 +158,7 @@ function register_custom_mutations()
                 'description'   => __('Full name of the gym user to be updated', PLUGIN_PREFIX)
             ],
             MEMBERSHIP_DURATION => [
-                'type'          => 'String', // should now be in VALIDDATEFORMAT form
+                'type'          => 'String', // should now be in VALIDMEMBERSHIPFORMAT form
                 'description'   => __('Extension to the membership duration', PLUGIN_PREFIX)
             ],
             IS_STUDENT          => [
@@ -249,6 +240,7 @@ function register_custom_mutations()
                 }
             }
 
+            //We expect the new user's ID or a WP_Error
             $result = ValidationHelper::instance()->validate_and_register_new_user($data, $input[GYM_ROLE]);
             if (is_wp_error($result)) {
                 foreach ($result->get_error_codes() as $error_code) {
