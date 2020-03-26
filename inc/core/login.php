@@ -5,6 +5,8 @@ namespace Builders_Plugin\Inc\Core;
 use Builders_Plugin\Inc\Helpers\Validation;
 use WP_Error;
 
+use function Builders_Plugin\Inc\Helpers\get_template_html;
+
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 class Login
@@ -88,7 +90,7 @@ class Login
         $attributes['logged_out'] = isset($_REQUEST['logged_out']) && $_REQUEST['logged_out'] == true;
 
         // Render the login form using an external template
-        return Validation::instance()->get_template_html('login_form', $attributes);
+        return get_template_html('login_form', $attributes);
     }
 
     /**

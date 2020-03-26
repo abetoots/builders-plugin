@@ -5,6 +5,8 @@ namespace Builders_Plugin\Inc\Core;
 use Builders_Plugin\Inc\Helpers\Validation;
 use WP_Error;
 
+use function Builders_Plugin\Inc\Helpers\get_template_html;
+
 use const Builders_Plugin\Constants\ACTION_REGISTER_GYM_MEMBER;
 use const Builders_Plugin\Constants\FULL_NAME;
 use const Builders_Plugin\Constants\BRANCH;
@@ -64,7 +66,7 @@ class Member_Registration
             }
 
             // Rendering of html is done here
-            return Validation::instance()->get_template_html('reg_form_gym_member', $attributes);
+            return get_template_html('reg_form_gym_member', $attributes);
         }
     }
 
