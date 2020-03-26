@@ -5,7 +5,6 @@ namespace Builders_Plugin\Inc\Helpers;
 use const Builders_Plugin\Constants\PLUGIN_PREFIX;
 use WP_Error;
 use DateTime;
-use WPGraphQL;
 
 if (!defined('ABSPATH')) exit;
 
@@ -22,24 +21,34 @@ class Validation
     }
 
     /**
-     * Validates the user and returns true if validation is success
+     * Validates and saves to the database the new data when updating a user and returns 
+     * either a WP_Error or the new data  on success
      * 
      * @param Object $data Associative array containing fields to validate
+     * @param String $role The role of the user's new data
      *
-     * @return bool|WP_Error The id of the user that was updated, or error if failed.
+     * @return Object|WP_Error The updated data as $newData of the user that was updated, or errors if any.
      */
-    public function validate_and_update_user($data)
+    public function validate_and_save_new_data_of_user($data)
     {
         $errors = array();
 
-        do_action('' . PLUGIN_PREFIX . '_custom_validation_update', $errors, $data);
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_update', $errors, $data);
 
         //return errors if any
         if (!empty($errors)) {
             return $this->build_errors($errors);
         }
 
-        return true;
+        $newData = [];
+        do_action('' . PLUGIN_PREFIX . '_custom_save_on_user_update', $errors, $data);
+
+        //return errors if any
+        if (!empty($errors)) {
+            return $this->build_errors($errors);
+        }
+
+        return $newData;
     }
 
     /**
@@ -88,7 +97,7 @@ class Validation
         }
 
         //Do custom validations for this plugin
-        do_action('' . PLUGIN_PREFIX . '_custom_validation_register', $errors, $data);
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_registration', $errors, $data);
 
         //return errors if any
         if (!empty($errors)) {
@@ -115,7 +124,7 @@ class Validation
         );
         $user_id = wp_insert_user($user_data);
 
-        do_action('' . PLUGIN_PREFIX . '_after_success_insert_user', $user_id, $data, $role);
+        do_action('' . PLUGIN_PREFIX . 'after_success_validate_and_register_new_user', $user_id, $data, $role);
         //wp_new_user_notification( $user_id, $password );
 
         return $user_id;
@@ -172,7 +181,6 @@ class Validation
             case 'captcha':
                 return __('The Google reCAPTCHA check failed. Are you a robot?', PLUGIN_PREFIX);
 
-
                 //Login Error Codes
             case 'invalid_username':
                 return __(
@@ -191,6 +199,9 @@ class Validation
             case 'empty_field':
                 return __('You forgot some fields though. Also, username must be always defined', PLUGIN_PREFIX);
 
+            case 'update_failed':
+                return __('Failed to update data. Something went wrong with our servers', PLUGIN_PREFIX);
+
             default:
                 break;
         }
@@ -206,41 +217,6 @@ class Validation
         $d = DateTime::createFromFormat($format, $date);
         // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
         return $d && $d->format($format) === $date;
-    }
-
-    /**
-     * Renders the contents of the given template to a string and returns it.
-     *
-     * @param string $template_name The name of the template to render (without .php)
-     * @param array  $attributes    The PHP variables for the template
-     *
-     * @return string               The contents of the template.
-     */
-    public function get_template_html($template_name, $attributes = null)
-    {
-        if (!$attributes) {
-            $attributes = array();
-        }
-
-        /**
-         * Notes:
-         * The output buffer collects everything that is printed between 
-         * ob_start and ob_end_clean so that it can then be retrieved as a string using ob_get_contents.
-         * 
-         * Notes: the do actions are called by add action, gives chance to other devs to add further customizations
-         */
-        ob_start();
-
-        do_action('' . PLUGIN_PREFIX . '_customize_reg_before_' . $template_name);
-
-        require(BUILDERS_PLUGIN_DIR . 'frontend/html-templates/' . $template_name . '.php');
-
-        do_action('' . PLUGIN_PREFIX . '_customize_reg_after_' . $template_name);
-
-        $html = ob_get_contents();
-        ob_end_clean();
-
-        return $html;
     }
 
     /**
