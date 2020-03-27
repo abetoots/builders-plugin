@@ -2,9 +2,11 @@
 
 namespace Builders_Plugin;
 
+
 use const Builders_Plugin\Constants\GYM_ADMIN;
 use const Builders_Plugin\Constants\GYM_MEMBER;
 use const Builders_Plugin\Constants\GYM_TRAINER;
+
 
 /**
  * Class Plugin
@@ -28,6 +30,7 @@ class Plugin
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/login.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/logout.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/graphql.php');
+        require_once(BUILDERS_PLUGIN_DIR . 'inc/core/user.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/core/utilities.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/validation.php');
         require_once(BUILDERS_PLUGIN_DIR . 'inc/helpers/acf.php');
@@ -62,7 +65,6 @@ class Plugin
             'read'      => true
         ));
     }
-
 
     /**
      * Add same custom capabilities to the defined roles
