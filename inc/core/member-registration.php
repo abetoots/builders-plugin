@@ -158,73 +158,6 @@ class Member_Registration
         echo "<script src='https://www.google.com/recaptcha/api.js'></script>";
     }
 
-    public static $metas = [
-        FULL_NAME => [
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ],
-        IS_STUDENT  => [
-            'type'  => 'number',
-            'rest'  => false,
-            'obj_type'  => 'User',
-        ],
-        GYM_ROLE  => [
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User'
-        ],
-        BRANCH  => [
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User'
-        ],
-        MEMBERSHIP_DURATION => [
-            'type'  => 'string',
-            'rest'  => false,
-            'obj_type'  => 'User'
-        ]
-    ];
-
-    /**
-     * Define user metas and show in REST API
-     * see https://docs.wpgraphql.com/getting-started/custom-fields-and-meta/
-     */
-
-    private function register_user_metas()
-    {
-        foreach (self::$metas as $key => $val) {
-            register_meta($val['obj_type'], $key, array(
-                "type" => $val['type'],
-                "show_in_rest" => $val['rest']
-            ));
-        }
-    }
-
-    public function register_user_metas_in_wpgraphql()
-    {
-        foreach (self::$metas as $key => $val) {
-            \register_graphql_field($val['obj_type'], $key, array(
-                //The schema only has 'Int' type, everything else convert to uppercase
-                'type' => $val['type'] === 'number' ? 'Int' : strtoupper($val['type']),
-                'resolve' => function ($obj, $dunno, $app_context, $resolve_info) {
-                    if ($resolve_info->fieldName === GYM_ROLE) {
-                        $role = get_userdata($obj->userId)->roles[0];
-                        if ($role === 'gym_member' || $role === 'gym_trainer' || $role === 'gym_admin' || $role === 'administrator') {
-                            return $role;
-                        }
-                    } elseif ($resolve_info->returnType->name === 'Int') {
-                        $return = get_user_meta($obj->userId, $resolve_info->fieldName, true) || 0;
-                        return $return;
-                    } else {
-                        $return = get_user_meta($obj->userId, $resolve_info->fieldName, true);
-                        return $return;
-                    }
-                }
-            ));
-        }
-    }
-
     /**
      * Instance
      *
@@ -272,9 +205,6 @@ class Member_Registration
      */
     public function init()
     {
-        //Register user metas
-        $this->register_user_metas();
-        add_action('graphql_register_types', array($this, 'register_user_metas_in_wpgraphql'));
         //Registration
         add_shortcode('builders-reg-form-member', array($this, 'render_registration_form'));
 
