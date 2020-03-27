@@ -29,11 +29,15 @@ class Validation
      *
      * @return Object|WP_Error The updated data as $newData of the user that was updated, or errors if any.
      */
-    public function validate_and_save_new_data_of_user($data)
+    public function validate_and_save_new_data_of_user($data, $role)
     {
         $errors = array();
 
-        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_update', $errors, $data);
+        if (empty($role)) {
+            $role = 'subscriber';
+        }
+
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_update', $errors, $data, $role);
 
         //return errors if any
         if (!empty($errors)) {
@@ -41,7 +45,7 @@ class Validation
         }
 
         $newData = [];
-        do_action('' . PLUGIN_PREFIX . '_custom_save_on_user_update', $errors, $data);
+        do_action('' . PLUGIN_PREFIX . '_custom_save_on_user_update', $errors, $data, $role, $newData);
 
         //return errors if any
         if (!empty($errors)) {
@@ -97,7 +101,7 @@ class Validation
         }
 
         //Do custom validations for this plugin
-        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_registration', $errors, $data);
+        do_action('' . PLUGIN_PREFIX . '_custom_validation_on_user_registration', $errors, $data, $role);
 
         //return errors if any
         if (!empty($errors)) {
