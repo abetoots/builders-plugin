@@ -2,8 +2,8 @@
 //TODO comments
 namespace Builders_Plugin\Inc\Core\GraphQl;
 
+use Builders_Plugin\Inc\Core\User;
 use Builders_Plugin\Inc\Helpers\Validation as ValidationHelper;
-use function Builders_Plugin\Inc\Core\Utilities\sanitizeGymData;
 
 use const Builders_Plugin\Constants\BRANCH;
 use const Builders_Plugin\Constants\FULL_NAME;
@@ -23,16 +23,30 @@ use const Builders_Plugin\Constants\THIRTY_DAYS;
 
 if (!defined('ABSPATH')) exit; //Exit if accessed directly
 
-function get_gym_member_graphql($id)
+//https://docs.wpgraphql.com/getting-started/custom-fields-and-meta/
+add_action('graphql_register_types', __NAMESPACE__ . '\register_user_metas_in_wpgraphql');
+function register_user_metas_in_wpgraphql()
 {
-    return \graphql([
-        'query' => ' {
-                        user(id: "' . $id . '", idType: DATABASE_ID) 
-                        {
-                            ' . GYM_MEMBER_FIELDS . '
-                        }
-                    }'
-    ]);
+    foreach (User::$metas as $key => $val) {
+        \register_graphql_field($val['obj_type'], $key, array(
+            //The schema only has 'Int' type, everything else convert to uppercase
+            'type' => $val['type'] === 'number' ? 'Int' : strtoupper($val['type']),
+            'resolve' => function ($obj, $dunno, $app_context, $resolve_info) {
+                if ($resolve_info->fieldName === GYM_ROLE) {
+                    $role = get_userdata($obj->userId)->roles[0];
+                    if ($role === 'gym_member' || $role === 'gym_trainer' || $role === 'gym_admin' || $role === 'administrator') {
+                        return $role;
+                    }
+                } elseif ($resolve_info->returnType->name === 'Int') {
+                    $return = get_user_meta($obj->userId, $resolve_info->fieldName, true) || 0;
+                    return $return;
+                } else {
+                    $return = get_user_meta($obj->userId, $resolve_info->fieldName, true);
+                    return $return;
+                }
+            }
+        ));
+    }
 }
 
 # This is the action that is executed as the GraphQL Schema is being built.
