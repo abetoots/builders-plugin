@@ -58,7 +58,6 @@ function sanitize_before_saving($errors, $data, $role, $newData)
     }
 }
 
-
 /**
  * We must handle updating our gym user after it is inserted
  *
